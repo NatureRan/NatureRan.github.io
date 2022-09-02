@@ -144,6 +144,102 @@
             
 
 <div class="post">
+    <a href="/2022/09/02/SpringBoot事务提交后执行后续操作/">
+        <h2 class="post-title">SpringBoot事务提交后执行后续操作</h2>
+    </a>
+    <div class="category-and-date">
+        
+        <span class="date">
+            <span class="icon">
+                <svg class="fa-icon"><use xlink:href="#calendar-solid"></use></svg>
+            </span>
+            2022/9/2
+        </span>
+    </div>
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            <h2 id="业务场景"><a href="#业务场景" class="headerlink" title="业务场景"></a>业务场景</h2><p>业务需求上经常会有一些边缘操作，比如主流程操作A：用户报名课程操作入库，边缘操作B：发送邮件或短信通知。</p>
+<h2 id="业务要求"><a href="#业务要求" class="headerlink" title="业务要求"></a>业务要求</h2><ul>
+<li>操作A操作数据库失败后，事务回滚，那么操作B不能执行。</li>
+<li>操作A执行成功后，操作B也必须执行成功</li>
+</ul>
+<h2 id="如何实现"><a href="#如何实现" class="headerlink" title="如何实现"></a>如何实现</h2><ul>
+<li>普通的执行A，之后执行B，是可以满足要求1，对于要求2通常需要设计补偿的操作</li>
+<li>一般边缘的操作，通常会设置成为异步的，以提升性能，比如发送MQ，业务系统负责事务成功后消息发送成功，然后接收系统负责保证通知成功完成</li>
+</ul>
+<h2 id="实现方案"><a href="#实现方案" class="headerlink" title="实现方案"></a>实现方案</h2><h3 id="使用TransactionSynchronizationManager在事务提交之后操作"><a href="#使用TransactionSynchronizationManager在事务提交之后操作" class="headerlink" title="使用TransactionSynchronizationManager在事务提交之后操作"></a>使用TransactionSynchronizationManager在事务提交之后操作</h3><pre><code class="java">@Component
+public class CallBackService &#123;
+
+    public void execute(final CallBackAction action) &#123;
+
+        if (TransactionSynchronizationManager.isActualTransactionActive()) &#123;
+            TransactionSynchronizationManager
+                    .registerSynchronization(new TransactionSynchronizationAdapter() &#123;
+                        @Override
+                        public void afterCommit() &#123;
+                            // 事务提交后执行回调
+                            action.callback();
+                        &#125;
+                    &#125;);
+        &#125; else &#123;
+            // 事务提交后执行回调
+            action.callback();
+        &#125;
+
+    &#125;
+
+&#125;
+</code></pre>
+<pre><code class="java">public interface CallBackAction &#123;
+    /**
+     * 普通事务回调
+     */
+    void callback();
+&#125;
+</code></pre>
+<ul>
+<li><p>有了上述两个类，就可以实现在一个事务提交后将消息发送到队列或是其他操作，具体操作如下</p>
+</li>
+<li><p>假设在一个业务下，往数据库插入了一条记录，然后向队列发送一条消息</p>
+<pre><code class="java">@Override
+@Transactional()
+public void save() &#123;
+    User user1 = new User();
+    User user2 = new User();
+    userMapper.insert(user1);
+    userMapper.insert(user2);
+    // 在事务提交后执行
+    callBackService.execute(() -&gt; &#123;
+        // ...
+    &#125;);
+&#125;
+</code></pre>
+</li>
+</ul>
+
+            
+        </div>
+    </div>
+    <div class="post-tags">
+        
+        <span class="icon">
+            <svg class="fa-icon"><use xlink:href="#tags-solid"></use></svg>
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/Java/" style="color: #ff7d73">
+                Java
+            </a>
+        </span>
+        
+    </div>
+    <a href="/2022/09/02/SpringBoot事务提交后执行后续操作/" class="go-post">阅读全文</a>
+</div>
+
+<div class="post">
     <a href="/2022/09/02/Okhttp3证书请求/">
         <h2 class="post-title">OkHttp3使用证书发起请求</h2>
     </a>
@@ -292,21 +388,21 @@ private SSLContext getSSLContext(String certPath, String certPass) &#123;
         
         <span class="tag">
             
-            <a href="/tags/OkHttp3/" style="color: #00bcd4">
+            <a href="/tags/OkHttp3/" style="color: #03a9f4">
                 OkHttp3
             </a>
         </span>
         
         <span class="tag">
             
-            <a href="/tags/Java/" style="color: #00bcd4">
+            <a href="/tags/Java/" style="color: #ffa2c4">
                 Java
             </a>
         </span>
         
         <span class="tag">
             
-            <a href="/tags/WeChat/" style="color: #ff7d73">
+            <a href="/tags/WeChat/" style="color: #00a596">
                 WeChat
             </a>
         </span>
@@ -519,7 +615,7 @@ LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
         
         <span class="tag">
             
-            <a href="/tags/Java/" style="color: #00a596">
+            <a href="/tags/Java/" style="color: #ff7d73">
                 Java
             </a>
         </span>
@@ -852,7 +948,7 @@ LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
         
         <span class="tag">
             
-            <a href="/tags/Java/" style="color: #ffa2c4">
+            <a href="/tags/Java/" style="color: #00bcd4">
                 Java
             </a>
         </span>
