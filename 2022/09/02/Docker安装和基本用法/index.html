@@ -1,0 +1,465 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+        <title>01、Docker安装和基本用法 | NatureRan</title>
+        <meta name="author" content="Nature">
+        <meta name="description" content="NatureRan ">
+        <meta name="keywords" content="java">
+        <link rel="icon" href="https://raw.githubusercontent.com/NatureRan/Images/main/benghuai11-headImg.jpg">
+        <script src="https://cdn.staticfile.org/instant.page/5.1.0/instantpage.min.js" type="module"></script>
+        <script src="https://cdn.staticfile.org/font-awesome/6.1.1/js/all.min.js"></script>
+        
+        <link rel="stylesheet" href="/css/fonts.min.css">
+        <link rel="stylesheet" href="/css/particlex.css">
+        
+        <script src="https://cdn.staticfile.org/vue/3.2.33/vue.global.prod.min.js"></script>
+    <meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div id="loading" style="height:100vh;width:100vw;position:fixed;display:flex;z-index:200;justify-content:space-between;background:#fff;transition:opacity 0.3s ease-out"><div style="position:fixed;height:100vh;width:100vw;display:flex;justify-content:center;align-items:center"><div id="loadcontent" style="width:50vmin;height:50vmin;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px #a3ddfb;text-align:center"><div><h2>LOADING...</h2><p style="word-break:keep-all">加载过慢请开启缓存(浏览器默认开启)</p><div><img alt="loading" src="/loading.gif"></div></div></div></div></div>
+        <div id="layout">
+            <i data-fa-symbol="calendar-solid" class="fa-solid fa-calendar fa-fw"></i>
+            <i data-fa-symbol="bookmark-solid" class="fa-solid fa-bookmark fa-fw"></i>
+            <i data-fa-symbol="tags-solid" class="fa-solid fa-tags fa-fw"></i>
+            <transition name="into">
+                <div v-show="show_page" style="display: -not-none">
+                    <div id="menu_show">
+                         
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">NatureRan</span>
+        </a>
+        
+        <a href="/">
+            <i class="fa-solid fa-house fa-fw"></i>
+            <span>&ensp;home</span>
+        </a>
+        
+        <a href="/about">
+            <i class="fa-solid fa-id-card fa-fw"></i>
+            <span>&ensp;about</span>
+        </a>
+        
+        <a href="/archives">
+            <i class="fa-solid fa-box-archive fa-fw"></i>
+            <span>&ensp;archives</span>
+        </a>
+        
+        <a href="/categories">
+            <i class="fa-solid fa-bookmark fa-fw"></i>
+            <span>&ensp;categories</span>
+        </a>
+        
+        <a href="/tags">
+            <i class="fa-solid fa-tags fa-fw"></i>
+            <span>&ensp;tags</span>
+        </a>
+        
+    </div>
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div class="curtain" @click="menu_show = !menu_show" v-show="menu_show"></div>
+        <div :class="'title'" @click="menu_show = !menu_show">
+            <i class="fa-solid fa-bars fa-fw"></i>
+            <span>&emsp;NatureRan</span>
+        </div>
+        <transition name="slide">
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-house fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">home</div>
+                </div>
+            </a>
+            
+            <a href="/about">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-id-card fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">about</div>
+                </div>
+            </a>
+            
+            <a href="/archives">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-box-archive fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">archives</div>
+                </div>
+            </a>
+            
+            <a href="/categories">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-bookmark fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">categories</div>
+                </div>
+            </a>
+            
+            <a href="/tags">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-tags fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">tags</div>
+                </div>
+            </a>
+            
+        </div>
+        </transition>
+    </div>
+</nav>
+                    </div>
+                    <div id="main">
+                        
+<div class="article">
+    <div>
+        <h1>01、Docker安装和基本用法 </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <svg class="fa-icon"><use xlink:href="#calendar-solid"></use></svg>
+            </span>
+            2022/9/2
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <svg class="fa-icon"><use xlink:href="#tags-solid"></use></svg>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/Docker/" style="color: #ffa2c4">
+                    Docker
+                </a>
+            </span>
+            
+        </span>
+        
+    </div>
+    <div class="content" v-pre>
+        <h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><h2 id="centOS"><a href="#centOS" class="headerlink" title="centOS"></a>centOS</h2><p><strong>使用官方安装脚本自动安装，安装命令如下：</strong></p>
+<pre><code>curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
+</code></pre>
+<p><strong>其他安装方式：</strong><a target="_blank" rel="noopener" href="https://www.runoob.com/docker/centos-docker-install.html">CentOS Docker 安装 | 菜鸟教程 (runoob.com)</a></p>
+<h1 id="镜像使用"><a href="#镜像使用" class="headerlink" title="镜像使用"></a>镜像使用</h1><h2 id="1、查看镜像"><a href="#1、查看镜像" class="headerlink" title="1、查看镜像"></a>1、查看镜像</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker images
+REPOSITORY        TAG                  IMAGE ID       CREATED        SIZE
+myspringboot      v1                   77b3d6313b00   11 days ago    407MB
+nature608/java8   centos-8.5           0ef78548e3cd   11 days ago    822MB
+openjdk           8-jdk-oraclelinux8   a269b19bda98   2 weeks ago    359MB
+centos            latest               5d0da3dc9764   7 months ago   231MB
+ubuntu            15.10                9b9cb95443b5   5 years ago    137MB
+</code></pre>
+<p><strong>各个选项说明:</strong></p>
+<p> <strong>REPOSITORY：</strong> <strong>表示镜像的仓库源</strong></p>
+<p> <strong>TAG：</strong> <strong>镜像的标签</strong></p>
+<p> <strong>IMAGE ID：</strong> <strong>镜像ID</strong></p>
+<p> <strong>CREATED：</strong> <strong>镜像创建时间</strong></p>
+<p> <strong>SIZE：</strong> <strong>镜像大小</strong></p>
+<h2 id="2、使用镜像运行容器"><a href="#2、使用镜像运行容器" class="headerlink" title="2、使用镜像运行容器"></a>2、使用镜像运行容器</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker run -it ubuntu:15.10 /bin/bash
+root@a8d1c080a1d5:/# 
+</code></pre>
+<p><strong>参数说明：</strong></p>
+<p><strong>-i: 交互式操作。</strong></p>
+<p><strong>-t: 终端。</strong></p>
+<p><strong>ubuntu:15.10: 这是指用 ubuntu 15.10 版本镜像为基础来启动容器。</strong></p>
+<p><strong>&#x2F;bin&#x2F;bash：放在镜像名后的是命令，这里我们希望有个交互式 Shell，因此用的是 &#x2F;bin&#x2F;bash。</strong></p>
+<p><strong>如果你不指定一个镜像的版本标签，例如你只使用 ubuntu，docker 将默认使用 ubuntu:latest 镜像。</strong></p>
+<h2 id="3、获取一个新镜像"><a href="#3、获取一个新镜像" class="headerlink" title="3、获取一个新镜像"></a>3、获取一个新镜像</h2><p><strong>当我们在本地主机上使用一个不存在的镜像时 Docker 就会自动下载这个镜像。如果我们想预先下载这个镜像，我们可以使用 docker pull 命令来下载它。</strong></p>
+<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker pull ubuntu:13.10
+</code></pre>
+<h2 id="4、删除镜像"><a href="#4、删除镜像" class="headerlink" title="4、删除镜像"></a>4、删除镜像</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker rmi ubuntu:13.10
+</code></pre>
+<p><strong>或者使用IMAGE ID</strong></p>
+<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker rmi 7f020f7bf345
+</code></pre>
+<h2 id="5、创建镜像"><a href="#5、创建镜像" class="headerlink" title="5、创建镜像"></a>5、创建镜像</h2><p><strong>当我们从 docker 镜像仓库中下载的镜像不能满足我们的需求时，我们可以通过以下两种方式对镜像进行更改。</strong></p>
+<p><strong>1、从已经创建的容器中更新镜像，并且提交这个镜像</strong></p>
+<p><strong>2、使用 Dockerfile 指令来创建一个新的镜像</strong></p>
+<h3 id="更新镜像"><a href="#更新镜像" class="headerlink" title="更新镜像"></a>更新镜像</h3><p><strong>更新镜像之前，我们需要使用镜像来创建一个容器。</strong></p>
+<p><strong>在完成操作之后，输入 exit 命令来退出这个容器。</strong></p>
+<p><strong>此时 ID 为 148444bfd3fa 的容器，是按我们的需求更改的容器。我们可以通过命令 docker commit 来提交容器副本。</strong></p>
+<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker run -it ubuntu:15.10 /bin/bash
+root@a8d1c080a1d5:/# apt-get update
+...
+root@148444bfd3fa:/# exit
+exit
+[root@iZbp1c0sait1zv807y3ok5Z ~]# docker commit -m=&#39;apt-get update&#39; -a=&#39;natrue&#39; 148444bfd3fa nature/unbutu:v2
+sha256:d8726aad226a231d1b0b33b6625ede043c9cb24e14809e418dc9b9f8ab3eb588
+[root@iZbp1c0sait1zv807y3ok5Z ~]# 
+</code></pre>
+<p><strong>各个参数说明：</strong></p>
+<p><strong>-m:</strong> 提交的描述信息</p>
+<p><strong>-a:</strong> 指定镜像作者</p>
+<p> <strong>e218edb10161：</strong> <strong>容器 ID</strong></p>
+<p><strong>runoob&#x2F;ubuntu:v2:</strong> 指定要创建的目标镜像名</p>
+<p><strong>我们可以使用 docker images 命令来查看我们的新镜像 nature&#x2F;ubuntu:v2：</strong></p>
+<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker images
+REPOSITORY        TAG                  IMAGE ID       CREATED              SIZE
+nature/unbutu     v2                   d8726aad226a   About a minute ago   137MB
+myspringboot      v1                   77b3d6313b00   11 days ago          407MB
+nature608/java8   centos-8.5           0ef78548e3cd   11 days ago          822MB
+openjdk           8-jdk-oraclelinux8   a269b19bda98   2 weeks ago          359MB
+centos            latest               5d0da3dc9764   7 months ago         231MB
+ubuntu            15.10                9b9cb95443b5   5 years ago          137MB
+</code></pre>
+<h3 id="构建镜像"><a href="#构建镜像" class="headerlink" title="构建镜像"></a>构建镜像</h3><p><strong>使用命令 docker build ， 从零开始来创建一个新的镜像。为此，我们需要创建一个 Dockerfile 文件，其中包含一组指令来告诉 Docker 如何构建我们的镜像。</strong></p>
+<p><strong>参数：</strong></p>
+<p><strong>-t   后面指定镜像名和tag</strong></p>
+<p><strong>EurekaService 是Dockerfile所在的目录，如果Dockerfile在当前目录则使用’.’代替 docker build -t eureka:2.4.6 .</strong></p>
+<pre><code class="shell">(base) nature@naturedeMacBook-Pro:MyTestProject/MySpringBoot ‹master*›$ docker build -t eureka:2.4.6 EurekaService
+[+] Building 6.0s (8/8) FINISHED                                                                                                                                                        
+ =&gt; [internal] load build definition from Dockerfile                                                                                                                                   0.0s
+ =&gt; =&gt; transferring dockerfile: 37B                                                                                                                                                    0.0s
+ =&gt; [internal] load .dockerignore                                                                                                                                                      0.0s
+ =&gt; =&gt; transferring context: 2B                                                                                                                                                        0.0s
+ =&gt; [internal] load metadata for docker.io/library/openjdk:8-jdk-oraclelinux8                                                                                                          2.8s
+ =&gt; [auth] library/openjdk:pull token for registry-1.docker.io                                                                                                                         0.0s
+ =&gt; [internal] load build context                                                                                                                                                      2.3s
+ =&gt; =&gt; transferring context: 46.97MB                                                                                                                                                   2.2s
+ =&gt; CACHED [1/2] FROM docker.io/library/openjdk:8-jdk-oraclelinux8@sha256:9d4c9fe13622b123b6b2950395daf45fa0333dee5746a630d4120731601e99ff                                             0.0s
+ =&gt; [2/2] COPY target/EurekaService-2.4.6.jar /opt                                                                                                                                     0.4s
+ =&gt; exporting to image                                                                                                                                                                 0.5s
+ =&gt; =&gt; exporting layers                                                                                                                                                                0.5s
+ =&gt; =&gt; writing image sha256:e0bf981ac313fa7005e1dc33ea6670d2bc4e189159aa7b7ac20bb431c6235278                                                                                           0.0s
+ =&gt; =&gt; naming to docker.io/library/eureka:2.4.6                                                                                                                                        0.0s
+
+Use &#39;docker scan&#39; to run Snyk tests against images to find vulnerabilities and learn how to fix them
+(base) nature@naturedeMacBook-Pro:MyTestProject/MySpringBoot ‹master*›$ 
+</code></pre>
+<h1 id="容器操作"><a href="#容器操作" class="headerlink" title="容器操作"></a>容器操作</h1><h2 id="1、通过镜像启动容器"><a href="#1、通过镜像启动容器" class="headerlink" title="1、通过镜像启动容器"></a>1、通过镜像启动容器</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker run -itd ubuntu:15.10 /bin/bash
+root@a8d1c080a1d5:/# exit
+exit
+[root@iZbp1c0sait1zv807y3ok5Z ~]# 
+</code></pre>
+<p><strong>参数说明：</strong></p>
+<p><strong>-i: 交互式操作。</strong></p>
+<p><strong>-t: 终端。</strong></p>
+<p><strong>-d: 后台运行（没有-d参数，在exit后容器会停止运行）</strong></p>
+<p><strong>ubuntu: ubuntu 镜像。</strong></p>
+<p><strong>&#x2F;bin&#x2F;bash：放在镜像名后的是命令，这里我们希望有个交互式 Shell，因此用的是 &#x2F;bin&#x2F;bash。</strong></p>
+<p><strong>–name：可以指定容器名称</strong></p>
+<p>**要退出终端，直接输入 ** <strong>exit</strong> <strong>:</strong></p>
+<h2 id="2、查看容器列表"><a href="#2、查看容器列表" class="headerlink" title="2、查看容器列表"></a>2、查看容器列表</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker ps -a
+CONTAINER ID   IMAGE             COMMAND                  CREATED       STATUS       PORTS                                       NAMES
+3768a28f0839   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   11 days ago   Up 11 days   0.0.0.0:8080-&gt;8080/tcp, :::8080-&gt;8080/tcp   determined_blackwell
+[root@iZbp1c0sait1zv807y3ok5Z ~]# 
+</code></pre>
+<p><strong>说明：</strong></p>
+<p><strong>CONTAINER ID：容器id</strong></p>
+<p><strong>IMAGE：对应的镜像</strong></p>
+<p><strong>COMMAND：容器内运行的命令</strong></p>
+<p><strong>CREATED：容器创建时间</strong></p>
+<p><strong>STATUS：UP-运行中 EXITED-停止中</strong></p>
+<p><strong>PORTS：端口映射</strong></p>
+<p><strong>NAMES：容器名字，可以重命名</strong></p>
+<h2 id="3、启动-x2F-停止已有的容器"><a href="#3、启动-x2F-停止已有的容器" class="headerlink" title="3、启动&#x2F;停止已有的容器"></a>3、启动&#x2F;停止已有的容器</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker stop 3768a28f0839
+3768a28f0839
+[root@iZbp1c0sait1zv807y3ok5Z ~]# docker start 3768a28f0839
+3768a28f0839
+[root@iZbp1c0sait1zv807y3ok5Z ~]# docker restart 3768a28f0839
+3768a28f0839
+</code></pre>
+<h2 id="4、进入-x2F-退出容器"><a href="#4、进入-x2F-退出容器" class="headerlink" title="4、进入&#x2F;退出容器"></a>4、进入&#x2F;退出容器</h2><p>在使用 <strong>-d</strong> 参数时，容器启动后会进入后台。此时想要进入容器，可以通过以下指令进入：</p>
+<p><strong>docker attach</strong></p>
+<p> <strong>docker exec</strong> <strong>：推荐使用 docker exec 命令，因为此命令会退出容器终端，但不会导致容器的停止。</strong></p>
+<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker attach 3768a28f0839
+2022-04-19 02:45:01.256  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-04-19 02:45:01.371  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-04-19 02:45:01.372  INFO 1 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.21]
+2022-04-19 02:45:01.625  INFO 1 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/learn]  : Initializing Spring embedded WebApplicationContext
+2022-04-19 02:45:01.625  INFO 1 --- [           main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 5440 ms
+2022-04-19 02:45:02.153  INFO 1 --- [           main] c.y.liteflow.spring.ComponentScanner     : component[g] has been found
+2022-04-19 02:45:02.184  INFO 1 --- [           main] c.y.liteflow.spring.ComponentScanner     : component[c] has been found
+2022-04-19 02:45:02.200  INFO 1 --- [           main] c.y.liteflow.spring.ComponentScanner     : component[d] has been found
+2022-04-19 02:45:02.201  INFO 1 --- [           main] c.y.liteflow.spring.ComponentScanner     : component[f] has been found
+2022-04-19 02:45:02.205  INFO 1 --- [           main] c.y.liteflow.spring.ComponentScanner     : component[a] has been found
+2022-04-19 02:45:02.206  INFO 1 --- [           main] c.y.liteflow.spring.ComponentScanner     : component[b] has been found
+2022-04-19 02:45:02.207  INFO 1 --- [           main] c.y.liteflow.spring.ComponentScanner     : component[e] has been found
+2022-04-19 02:45:02.846  INFO 1 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService &#39;applicationTaskExecutor&#39;
+2022-04-19 02:45:02.955  INFO 1 --- [           main] c.a.c.s.SentinelWebAutoConfiguration     : [Sentinel Starter] register SentinelWebInterceptor with urlPatterns: [/**].
+2022-04-19 02:45:03.359  INFO 1 --- [           main] com.yomahub.liteflow.core.FlowExecutor   : flow info loaded from local file,path=ruleConfig/flow.xml,format type=xml
+2022-04-19 02:45:04.479  WARN 1 --- [           main] arterDeprecationWarningAutoConfiguration : spring-boot-starter-redis is deprecated as of Spring Boot 1.4, please migrate to spring-boot-starter-data-redis
+2022-04-19 02:45:04.911  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path &#39;/learn&#39;
+2022-04-19 02:45:04.918  INFO 1 --- [           main] c.n.m.MyspringbootApplication            : Started MyspringbootApplication in 11.074 seconds (JVM running for 12.141)
+INFO: log output type is: file
+INFO: log charset is: utf-8
+INFO: log base dir is: /root/logs/csp/
+INFO: log name use pid is: false
+2022-04-19 02:45:05.060  INFO 1 --- [           main] c.n.m.sentinel.init.FlowRuleInitFunc     : 限流规则初始化
+2022-04-19 02:45:05.066  INFO 1 --- [           main] c.n.m.sentinel.init.FlowRuleInitFunc     : 限流规则初始化完成
+^C2022-04-19 02:46:23.052  INFO 1 --- [       Thread-5] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService &#39;applicationTaskExecutor&#39;
+[root@iZbp1c0sait1zv807y3ok5Z ~]# docker ps -a
+CONTAINER ID   IMAGE             COMMAND                  CREATED       STATUS                        PORTS     NAMES
+3768a28f0839   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   11 days ago   Exited (130) 49 seconds ago             determined_blackwell
+[root@iZbp1c0sait1zv807y3ok5Z ~]# 
+</code></pre>
+<p><strong>由于容器里正在运行java进程，所以attach容器可以直接看到打印日志，使用command+c停止进程后，容器也自动停止了</strong></p>
+<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker exec -it 3768a28f0839 /bin/bash
+bash-4.4# exit
+exit
+[root@iZbp1c0sait1zv807y3ok5Z ~]# docker ps -a
+CONTAINER ID   IMAGE             COMMAND                  CREATED       STATUS         PORTS                                       NAMES
+3768a28f0839   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   11 days ago   Up 2 minutes   0.0.0.0:8080-&gt;8080/tcp, :::8080-&gt;8080/tcp   determined_blackwell
+[root@iZbp1c0sait1zv807y3ok5Z ~]# 
+</code></pre>
+<p><strong>参数说明：</strong></p>
+<p><strong>-i: 交互式操作。</strong></p>
+<p><strong>-t: 终端。</strong></p>
+<p><strong>&#x2F;bin&#x2F;bash：放在容器id后的是命令，这里我们希望有个交互式 Shell，因此用的是 &#x2F;bin&#x2F;bash。</strong></p>
+<p><strong>此时进入容器并且开启了一个bash进程，这样exit的时候只会终止bash进程，不会停止容器中的主进程。</strong></p>
+<h2 id="5、删除容器"><a href="#5、删除容器" class="headerlink" title="5、删除容器"></a>5、删除容器</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker rm 3768a28f0839
+Error response from daemon: You cannot remove a running container 3768a28f083923ba82c7853ae931b2c42a0e105a704672b130b40c962b04b2c4. Stop the container before attempting removal or force remove
+[root@iZbp1c0sait1zv807y3ok5Z ~]# 
+</code></pre>
+<p><strong>运行中的容器不能被删除，必须先停止。或者使用docker rm -f 3768a28f0839 强制删除</strong></p>
+<p><strong>docker container prune 可以清除所有终止状态的容器</strong></p>
+<h2 id="6、导入-x2F-导出容器"><a href="#6、导入-x2F-导出容器" class="headerlink" title="6、导入&#x2F;导出容器"></a>6、导入&#x2F;导出容器</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker export 3768a28f0839 &gt; myspringbootv1.tar
+[root@iZbp1c0sait1zv807y3ok5Z ~]# ls
+myspringbootv1.tar
+[root@iZbp1c0sait1zv807y3ok5Z ~]# 
+</code></pre>
+<p><strong>docker export导出容器3768a28f0839 到本地文件myspringbootv1.tar</strong></p>
+<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker import myspringbootv1.tar myspringboot:v2
+sha256:e751aada4696c580ed8c2509b3e2f3dd727cb1ba49c15d4041dcd5a9df4177a1
+[root@iZbp1c0sait1zv807y3ok5Z ~]# docker images
+REPOSITORY        TAG                  IMAGE ID       CREATED         SIZE
+myspringboot      v2                   e751aada4696   4 seconds ago   401MB
+myspringboot      v1                   77b3d6313b00   11 days ago     407MB
+nature608/java8   centos-8.5           0ef78548e3cd   11 days ago     822MB
+openjdk           8-jdk-oraclelinux8   a269b19bda98   2 weeks ago     359MB
+centos            latest               5d0da3dc9764   7 months ago    231MB
+ubuntu            15.10                9b9cb95443b5   5 years ago     137MB
+[root@iZbp1c0sait1zv807y3ok5Z ~]# 
+</code></pre>
+<p><strong>docker import 将导出的容器导入，导入后会变成一个镜像，名字为myspringboot tag为v2</strong></p>
+<p><strong>此外，也可以通过指定 URL 或者某个目录来导入，例如：</strong></p>
+<pre><code class="shell">$ docker import http://example.com/exampleimage.tgz example/imagerepo
+</code></pre>
+<h1 id="容器连接"><a href="#容器连接" class="headerlink" title="容器连接"></a>容器连接</h1><h2 id="1、容器端口映射"><a href="#1、容器端口映射" class="headerlink" title="1、容器端口映射"></a>1、容器端口映射</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker run -d -p 8090:8080 myspringboot:v1
+9c370ac40a952178055cd26409a58c1a6893a2d767b3273e0a473f7ea3a586e4
+[root@iZbp1c0sait1zv807y3ok5Z ~]# docker ps -a
+CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS         PORTS                                       NAMES
+9c370ac40a95   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   5 seconds ago    Up 4 seconds   0.0.0.0:8090-&gt;8080/tcp, :::8090-&gt;8080/tcp   eager_mclaren
+3768a28f0839   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   2 weeks ago      Up 2 days      0.0.0.0:8080-&gt;8080/tcp, :::8080-&gt;8080/tcp   determined_blackwell
+[root@iZbp1c0sait1zv807y3ok5Z ~]#
+</code></pre>
+<p><strong>-p 参数可以指定端口映射 -p 8090:8080 表示将容器的8080端口映射到宿主机的8090端口上，也可以指定ip地址，-p 127.0.0.1:8090:8080，默认ip为0.0.0.0</strong></p>
+<p><strong>-P 这个参数不需要再指定端口 它是容器内部端口随机映射到主机的端口（容器内部端口一般会写在Dockerfile下）</strong></p>
+<h2 id="2、端口映射查看"><a href="#2、端口映射查看" class="headerlink" title="2、端口映射查看"></a>2、端口映射查看</h2><p><strong>docker ps -a 可以看到映射信息</strong></p>
+<p><strong>也可以用docker port [容器id | 容器名称]查看</strong></p>
+<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker ps -a
+CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS          PORTS                                       NAMES
+9c370ac40a95   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   41 seconds ago   Up 40 seconds   0.0.0.0:8090-&gt;8080/tcp, :::8090-&gt;8080/tcp   eager_mclaren
+3768a28f0839   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   2 weeks ago      Up 2 days       0.0.0.0:8080-&gt;8080/tcp, :::8080-&gt;8080/tcp   determined_blackwell
+[root@iZbp1c0sait1zv807y3ok5Z ~]# docker port 9c370ac40a95 8080
+0.0.0.0:8090
+:::8090
+[root@iZbp1c0sait1zv807y3ok5Z ~]# docker port eager_mclaren 8080
+0.0.0.0:8090
+:::8090
+[root@iZbp1c0sait1zv807y3ok5Z ~]# 
+</code></pre>
+<h2 id="3、容器互联"><a href="#3、容器互联" class="headerlink" title="3、容器互联"></a>3、容器互联</h2><p><strong>创建一个docker网络</strong></p>
+<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker network create -d bridge test-net
+479a089acedcfe644a31d9172f220547edf63be62938f406f8d6ba22fdf10a25
+[root@iZbp1c0sait1zv807y3ok5Z ~]# docker network ls
+NETWORK ID     NAME       DRIVER    SCOPE
+27250b04a274   bridge     bridge    local
+62b204f11532   host       host      local
+dbca65784678   none       null      local
+479a089acedc   test-net   bridge    local
+[root@iZbp1c0sait1zv807y3ok5Z ~]# 
+</code></pre>
+<p><strong>参数说明：</strong></p>
+<p> <strong>-d</strong> <strong>：参数指定 Docker 网络类型，有 bridge、overlay。</strong></p>
+<p><strong>其中 overlay 网络类型用于 Swarm mode，在本小节中你可以忽略它。</strong></p>
+<p><strong>test-net就是网络的名称</strong></p>
+<p><strong>运行容器并连接到test-net网络</strong></p>
+<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker run -d --name test1 --network test-net myspringboot:v2
+1e82da9b5d04f691662a64d557cdcc72782a0e84d6c32f4d3d06aeaebdd88f43
+[root@iZbp1c0sait1zv807y3ok5Z ~]# docker run -d --name test2 --network test-net myspringboot:v2
+529a7ddc6515d0413c2b51614a02ad211855365016aa91c3342785cbc9b9f7c4
+[root@iZbp1c0sait1zv807y3ok5Z ~]# docker ps -a
+CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS          PORTS                                       NAMES
+529a7ddc6515   myspringboot:v2   &quot;/bin/sh -c &#39;java -j…&quot;   7 seconds ago    Up 5 seconds    8080/tcp                                    test2
+1e82da9b5d04   myspringboot:v2   &quot;/bin/sh -c &#39;java -j…&quot;   13 seconds ago   Up 12 seconds   8080/tcp                                    test1
+3768a28f0839   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   2 weeks ago      Up 2 days       0.0.0.0:8080-&gt;8080/tcp, :::8080-&gt;8080/tcp   determined_blackwell
+[root@iZbp1c0sait1zv807y3ok5Z ~]# 
+</code></pre>
+<p><strong>进入test1容器，ping test2，发现网络是连通的</strong></p>
+<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker exec -it test1 /bin/bash
+[root@1e82da9b5d04 /]# ping test2
+PING test2 (172.18.0.3) 56(84) bytes of data.
+64 bytes from test2.test-net (172.18.0.3): icmp_seq=1 ttl=64 time=0.114 ms
+64 bytes from test2.test-net (172.18.0.3): icmp_seq=2 ttl=64 time=0.088 ms
+64 bytes from test2.test-net (172.18.0.3): icmp_seq=3 ttl=64 time=0.081 ms
+64 bytes from test2.test-net (172.18.0.3): icmp_seq=4 ttl=64 time=0.077 ms
+^C
+--- test2 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3068ms
+rtt min/avg/max/mdev = 0.077/0.090/0.114/0.014 ms
+[root@1e82da9b5d04 /]# 
+</code></pre>
+
+    </div>
+    
+</div>
+                         
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 20xx - 2022 NatureRan
+            <span class="footer-icon">
+                <i class="fa-solid fa-font-awesome fa-fw"></i>
+            </span>
+            @Nature
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/argvchs/hexo-theme-particlex">ParticleX Theme</a></div>
+        
+    </div>
+</footer>
+                    </div>
+                </div>
+            </transition>
+            <div id="img_show">
+                <img id="img_content" alt="img_show">
+            </div>
+        </div>
+        <script src="https://cdn.staticfile.org/highlight.js/11.5.1/highlight.min.js"></script>
+        <script src="/js/particlex.js"></script>
+        <script src="/js/showimg.js"></script>
+        
+
+    </body>
+
+    <canvas
+        id="fireworks"
+        style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483647"
+    ></canvas>
+    <script type="text/javascript" src="/js/anime.js"></script>
+    <script src="/js/fireworks.js"></script>
+
+    <canvas
+        id="background"
+        style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:-1"
+    ></canvas>
+    <script src="/js/background.js"></script>
+
+    <div id="cursor"></div>
+    <script src="/css/cursor.css"></script>
+    <script src="/js/cursor.js"></script>
+</html>

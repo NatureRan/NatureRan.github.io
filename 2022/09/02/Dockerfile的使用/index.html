@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
-        <title>Tags | NatureRan</title>
+        <title>02、Dockerfile的使用 | NatureRan</title>
         <meta name="author" content="Nature">
         <meta name="description" content="NatureRan ">
         <meta name="keywords" content="java">
@@ -119,55 +119,95 @@
 </nav>
                     </div>
                     <div id="main">
-                         
-<div class="categories-tags">
+                        
+<div class="article">
+    <div>
+        <h1>02、Dockerfile的使用 </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <svg class="fa-icon"><use xlink:href="#calendar-solid"></use></svg>
+            </span>
+            2022/9/2
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <svg class="fa-icon"><use xlink:href="#tags-solid"></use></svg>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/Docker/" style="color: #00a596">
+                    Docker
+                </a>
+            </span>
+            
+        </span>
+        
+    </div>
+    <div class="content" v-pre>
+        <h1 id="Dockerfile常用命令"><a href="#Dockerfile常用命令" class="headerlink" title="Dockerfile常用命令"></a>Dockerfile常用命令</h1><h2 id="FROM"><a href="#FROM" class="headerlink" title="FROM"></a>FROM</h2><p><strong>当前镜像基于哪个镜像生成</strong></p>
+<p><strong>例如：基于openjdk8创建一个新镜像</strong></p>
+<pre><code>FROM openjdk:8-jdk-oraclelinux8
+</code></pre>
+<h2 id="COPY"><a href="#COPY" class="headerlink" title="COPY"></a>COPY</h2><p><strong>拷贝，将Dockerfile上下文的一些文件拷贝到容器的指定路径中</strong></p>
+<p><strong>例如：将jar包拷贝到容器&#x2F;opt 目录下</strong></p>
+<pre><code>COPY target/EurekaService-2.4.6.jar /opt
+</code></pre>
+<h2 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h2><p><strong>仅仅只是声明端口。</strong></p>
+<p><strong>作用：</strong></p>
+<p><strong>帮助镜像使用者理解这个镜像服务的守护端口，以方便配置映射。</strong></p>
+<p><strong>在运行时使用随机端口映射时，也就是 docker run -P 时，会自动随机映射 EXPOSE 的端口。</strong></p>
+<p><strong>例如：EurekaService的端口是8761</strong></p>
+<pre><code>EXPOSE 8761
+</code></pre>
+<h2 id="CMD"><a href="#CMD" class="headerlink" title="CMD"></a>CMD</h2><p><strong>用于运行主要程序</strong></p>
+<p><strong>例如：运行镜像时需要启动EurekaService</strong></p>
+<pre><code>CMD java -jar -Xms128M -Xmx256m /opt/EurekaService-2.4.6.jar
+</code></pre>
+<p><strong>RUN</strong></p>
+<p><strong>用于执行后面跟着的命令行命令</strong></p>
+<pre><code>FROM centos 
+RUN yum -y install wget 
+RUN wget -O redis.tar.gz &quot;http://download.redis.io/releases/redis-5.0.3.tar.gz&quot; 
+RUN tar -xvf redis.tar.gz
+</code></pre>
+<p><strong>注意：Dockerfile 的指令每执行一次都会在 docker 上新建一层。所以过多无意义的层，会造成镜像膨胀过大。所以上面的写法可以简化为</strong></p>
+<pre><code>FROM centos 
+RUN yum -y install wget \   
+  &amp;&amp; wget -O redis.tar.gz &quot;http://download.redis.io/releases/redis-5.0.3.tar.gz&quot; \   
+  &amp;&amp; tar -xvf redis.tar.gz
+</code></pre>
+<p><strong>开始构建镜像</strong></p>
+<p><strong>在 Dockerfile 文件的存放目录下，执行构建动作。</strong></p>
+<p><strong>命令 docker build -t [镜像名]:[tag名] .</strong></p>
+<p><strong>如果过Dockerfile不在当前目录下，将末尾的‘.’ 换成Dockerfile所在的目录</strong></p>
+<pre><code class="shell">(base) nature@naturedeMacBook-Pro:MyTestProject/MySpringBoot ‹master*›$ docker build -t eureka:2.4.6 .
+[+] Building 6.0s (8/8) FINISHED                                                                                                                                                      
+=&gt; [internal] load build definition from Dockerfile                                                                                                                                   0.0s
+=&gt; =&gt; transferring dockerfile: 37B                                                                                                                                                    0.0s
+=&gt; [internal] load .dockerignore                                                                                                                                                      0.0s
+=&gt; =&gt; transferring context: 2B                                                                                                                                                        0.0s
+=&gt; [internal] load metadata for docker.io/library/openjdk:8-jdk-oraclelinux8                                                                                                          2.8s
+=&gt; [auth] library/openjdk:pull token for registry-1.docker.io                                                                                                                         0.0s
+=&gt; [internal] load build context                                                                                                                                                      2.3s
+=&gt; =&gt; transferring context: 46.97MB                                                                                                                                                   2.2s
+=&gt; CACHED [1/2] FROM docker.io/library/openjdk:8-jdk-oraclelinux8@sha256:9d4c9fe13622b123b6b2950395daf45fa0333dee5746a630d4120731601e99ff                                             0.0s
+=&gt; [2/2] COPY target/EurekaService-2.4.6.jar /opt                                                                                                                                     0.4s
+=&gt; exporting to image                                                                                                                                                                 0.5s
+=&gt; =&gt; exporting layers                                                                                                                                                                0.5s
+=&gt; =&gt; writing image sha256:e0bf981ac313fa7005e1dc33ea6670d2bc4e189159aa7b7ac20bb431c6235278                                                                                           0.0s
+=&gt; =&gt; naming to docker.io/library/eureka:2.4.6                                                                                                                                        0.0s
+
+Use &#39;docker scan&#39; to run Snyk tests against images to find vulnerabilities and learn how to fix them
+(base) nature@naturedeMacBook-Pro:MyTestProject/MySpringBoot ‹master*›$ 
+</code></pre>
+
+    </div>
     
-    <div class="all-s">
-        
-        
-        <span>
-            <a href="/tags/Docker/" style="background: #00bcd4">
-                <span class="icon">
-                    <svg class="fa-icon"><use xlink:href="#tags-solid"></use></svg>
-                </span>
-                Docker
-            </a>
-        </span>
-        
-        
-        <span>
-            <a href="/tags/Java/" style="background: #00a596">
-                <span class="icon">
-                    <svg class="fa-icon"><use xlink:href="#tags-solid"></use></svg>
-                </span>
-                Java
-            </a>
-        </span>
-        
-        
-        <span>
-            <a href="/tags/OkHttp3/" style="background: #03a9f4">
-                <span class="icon">
-                    <svg class="fa-icon"><use xlink:href="#tags-solid"></use></svg>
-                </span>
-                OkHttp3
-            </a>
-        </span>
-        
-        
-        <span>
-            <a href="/tags/WeChat/" style="background: #03a9f4">
-                <span class="icon">
-                    <svg class="fa-icon"><use xlink:href="#tags-solid"></use></svg>
-                </span>
-                WeChat
-            </a>
-        </span>
-        
-    </div>
-    <div id="archives">
-        
-    </div>
 </div>
                          
 <footer id="footer">

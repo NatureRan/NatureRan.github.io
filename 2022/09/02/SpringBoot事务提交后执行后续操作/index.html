@@ -132,6 +132,15 @@
             2022/9/2
         </span>
         
+        <span class="category">
+            <a href="/categories/工作记录/">
+                <span class="icon">
+                    <svg class="fa-icon"><use xlink:href="#bookmark-solid"></use></svg>
+                </span>
+                工作记录
+            </a>
+        </span>
+        
         
         <span class="tags">
             <span class="icon">
@@ -140,7 +149,7 @@
             
             <span class="tag">
                 
-                <a href="/tags/Java/" style="color: #ffa2c4">
+                <a href="/tags/Java/" style="color: #00a596">
                     Java
                 </a>
             </span>
@@ -240,4 +249,21 @@ public void save() &#123;
         
 
     </body>
+
+    <canvas
+        id="fireworks"
+        style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483647"
+    ></canvas>
+    <script type="text/javascript" src="/js/anime.js"></script>
+    <script src="/js/fireworks.js"></script>
+
+    <canvas
+        id="background"
+        style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:-1"
+    ></canvas>
+    <script src="/js/background.js"></script>
+
+    <div id="cursor"></div>
+    <script src="/css/cursor.css"></script>
+    <script src="/js/cursor.js"></script>
 </html>
