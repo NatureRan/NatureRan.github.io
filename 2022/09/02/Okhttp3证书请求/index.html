@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
-        <title>Archives | NatureRan</title>
+        <title>OkHttp3使用证书发起请求 | NatureRan</title>
         <meta name="author" content="Nature">
         <meta name="description" content="NatureRan ">
         <meta name="keywords" content="java">
@@ -120,75 +120,142 @@
                     </div>
                     <div id="main">
                         
-<div id="archives">
-    
-    <div class="timeline">
-        <div class="timeline-tail"></div>
-        <div class="timeline-content">
-            <div class="item-time">2022/9/2</div>
-            <a href="/2022/09/02/Okhttp3证书请求/">
-                <h3>OkHttp3使用证书发起请求</h3>
-            </a>
-            <div class="info">
-                
-                <span class="category">
-                    <a href="/categories/工作记录/">
-                        <span class="icon">
-                            <svg class="fa-icon"><use xlink:href="#bookmark-solid"></use></svg>
-                        </span>
-                        工作记录
-                    </a>
-                </span>
-                
-                
-            </div>
-        </div>
+<div class="article">
+    <div>
+        <h1>OkHttp3使用证书发起请求 </h1>
     </div>
-    
-    <div class="timeline">
-        <div class="timeline-tail"></div>
-        <div class="timeline-content">
-            <div class="item-time">2022/9/2</div>
-            <a href="/2022/09/02/GuavaCache/">
-                <h3>Guava Caches文档</h3>
-            </a>
-            <div class="info">
-                
-                <span class="category">
-                    <a href="/categories/文档/">
-                        <span class="icon">
-                            <svg class="fa-icon"><use xlink:href="#bookmark-solid"></use></svg>
-                        </span>
-                        文档
-                    </a>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <svg class="fa-icon"><use xlink:href="#calendar-solid"></use></svg>
+            </span>
+            2022/9/2
+        </span>
+        
+        <span class="category">
+            <a href="/categories/工作记录/">
+                <span class="icon">
+                    <svg class="fa-icon"><use xlink:href="#bookmark-solid"></use></svg>
                 </span>
-                
-                
-            </div>
-        </div>
+                工作记录
+            </a>
+        </span>
+        
+        
     </div>
-    
-    <div class="timeline">
-        <div class="timeline-tail"></div>
-        <div class="timeline-content">
-            <div class="item-time">2022/8/31</div>
-            <a href="/2022/08/31/红黑树/">
-                <h3>红黑树</h3>
-            </a>
-            <div class="info">
-                
-                <span class="category">
-                    <a href="/categories/算法/">
-                        <span class="icon">
-                            <svg class="fa-icon"><use xlink:href="#bookmark-solid"></use></svg>
-                        </span>
-                        算法
-                    </a>
-                </span>
-                
-                
-            </div>
-        </div>
+    <div class="content" v-pre>
+        <blockquote>
+<p> 最近在对接微信支付功能，微信所有接口都采用okHttp3请求，但是申请退款接口需要证书才能调用，那如何使用证书发起请求以及证书如何获取，先看一下微信开发文档</p>
+</blockquote>
+<ol>
+<li>在微信支付接口中，涉及资金回滚的接口会使用到API证书，包括退款、撤销接口。商家在申请微信支付成功后，收到的相应邮件后，可以按照指引下载API证书，也可以按照以下路径下载：微信商户平台(pay.weixin.qq.com)–&gt;账户中心–&gt;账户设置–&gt;API安全 。证书文件说明如下：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>证书附件</th>
+<th>描述</th>
+<th>使用场景</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>pkcs12格式(apiclient_cert.p12、</td>
+<td>包含了私钥信息的证书文件，为p12(pfx)格式，由微信支付签发给您用来标识和界定您的身份</td>
+<td>撤销、退款申请API中调用</td>
+<td>windows上可以直接双击导入系统，导入过程中会提示输入证书密码，证书密码默认为您的商户ID（如：10010000）</td>
+</tr>
+</tbody></table>
+<ul>
+<li>以下两个证书在PHP环境中使用：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>证书附件</th>
+<th>描述</th>
+<th>使用场景</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>证书pem格式（apiclient_cert.pem）</td>
+<td>从apiclient_cert.p12中导出证书部分的文件，为pem格式，请妥善保管不要泄漏和被他人复制</td>
+<td>PHP等不能直接使用p12文件，而需要使用pem，为了方便您使用，已为您直接提供</td>
+<td>您也可以使用openssl命令来自己导出：openssl pkcs12 -clcerts -nokeys -in apiclient_cert.p12 -out apiclient_cert.pem）</td>
+</tr>
+<tr>
+<td>证书密钥pem格式（apiclient_key.pem）</td>
+<td>从apiclient_key.pem中导出密钥部分的文件，为pem格式，请妥善保管不要泄漏和被他人复制</td>
+<td>PHP等不能直接使用p12文件，而需要使用pem，为了方便您使用，已为您直接提供</td>
+<td>您也可以使用openssl命令来自己导出：openssl pkcs12 -nocerts -in apiclient_cert.p12 -out apiclient_key.pem</td>
+</tr>
+</tbody></table>
+<ol start="2">
+<li>使用API证书<ul>
+<li>apiclient_cert.p12是商户证书文件，除PHP外的开发均使用此证书文件。</li>
+<li>商户如果使用.NET环境开发，请确认Framework版本大于2.0，必须在操作系统上双击安装证书apiclient_cert.p12后才能被正常调用。</li>
+<li>API证书调用或安装需要使用到密码，该密码的值为微信商户号（mch_id）</li>
+</ul>
+</li>
+<li>API证书安全<ul>
+<li>证书文件不能放在web服务器虚拟目录，应放在有访问权限控制的目录中，防止被他人下载；</li>
+<li>建议将证书文件名改为复杂且不容易猜测的文件名；</li>
+<li>商户服务器要做好病毒和木马防护工作，不被非法侵入者窃取证书文件。</li>
+</ul>
+</li>
+<li>商户回调API安全<ul>
+<li>在普通的网络环境下，HTTP请求存在DNS劫持、运营商插入广告、数据被窃取，正常数据被修改等安全风险。商户回调接口使用HTTPS协议可以保证数据传输的安全性。所以微信支付建议商户提供给微信支付的各种回调采用HTTPS协议。</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>以上就是微信对于API证书的说明，从微信商户平台上可以下载对应的证书，每个商户id都会对应一个证书，发起请求的时候需要使用对应的证书才可以</p>
+</blockquote>
+<ul>
+<li><p>我们把证书文件 ***.p12文件发在 resource&#x2F;assets 目录下，创建带证书的OkHttpClient方法如下：</p>
+<pre><code class="java">SSLContext sslContext = getSSLContextByAppKey(appKey);
+if (sslContext == null) &#123;
+    restLogger.info(&quot;获取证书失败&quot;);
+    return null;
+&#125;
+OkHttpClient client = new OkHttpClient().newBuilder().sslSocketFactory(sslContext.getSocketFactory()).build();
+</code></pre>
+</li>
+<li><p>获取SSLContext的方法如下：</p>
+<pre><code class="java">private SSLContext getSSLContextByAppKey(String mchId) &#123;
+    // 设置证书路径
+    String certPath = String.format(&quot;assets/%s.p12&quot;, mchId);
+    // 设置证书密码
+    String certPass = mchId;
+    // 获取证书
+    return getSSLContext(certPath, certPass);
+&#125;
+private SSLContext getSSLContext(String certPath, String certPass) &#123;
+    try &#123;
+        KeyStore clientStore = KeyStore.getInstance(&quot;PKCS12&quot;);
+        // 读取resource下的文件 支持jar方式启动
+        Resource resource = new ClassPathResource(certPath);
+        InputStream inputStream = resource.getInputStream();
+        char[] passArray = certPass.toCharArray();
+        clientStore.load(inputStream, passArray);
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(clientStore, passArray);
+        KeyManager[] kms = kmf.getKeyManagers();
+        SSLContext sslContext = SSLContext.getInstance(&quot;TLSv1&quot;);
+        sslContext.init(kms, null, new SecureRandom());
+        return sslContext;
+    &#125; catch (Exception e) &#123;
+        restLogger.info(&quot;设置证书出错&quot;);
+    &#125;
+    return null;
+&#125;
+</code></pre>
+</li>
+<li><p>按上述方式获取到的OkHttpClient就就能带着证书发起https请求了</p>
+</li>
+</ul>
+
     </div>
     
 </div>
