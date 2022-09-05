@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
         <title>红黑树 | NatureRan</title>
         <meta name="author" content="Nature">
-        <meta name="description" content="NatureRan ">
+        <meta name="description" content="">
         <meta name="keywords" content="java">
         <link rel="icon" href="https://raw.githubusercontent.com/NatureRan/Images/main/benghuai11-headImg.jpg">
         <script src="https://cdn.staticfile.org/instant.page/5.1.0/instantpage.min.js" type="module"></script>
@@ -149,7 +149,7 @@
             
             <span class="tag">
                 
-                <a href="/tags/Java/" style="color: #03a9f4">
+                <a href="/tags/Java/" style="color: #00bcd4">
                     Java
                 </a>
             </span>
@@ -447,6 +447,12 @@
 
     </div>
     
+    <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
 </div>
                          
 <footer id="footer">
@@ -462,6 +468,12 @@
         <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
                 target="_blank" rel="noopener" href="https://github.com/argvchs/hexo-theme-particlex">ParticleX Theme</a></div>
         
+        <div>
+            备案号：<a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">
+                正在申请
+            </a>
+        </div>
+        
     </div>
 </footer>
                     </div>
@@ -475,6 +487,24 @@
         <script src="/js/particlex.js"></script>
         <script src="/js/showimg.js"></script>
         
+<script src="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.js"></script>
+<script>
+    var clientID = "240487ff75e73edeb415", clientSecret = "e4e29f4f7a4a8269fbd36fb31884017b1acda8cd";
+    
+    const gitalk = new Gitalk({
+        clientID: clientID,
+        clientSecret: clientSecret,
+        repo: "natureran.github.io",
+        owner: "NatureRan",
+        admin: ["NatureRan"],
+        language: "zh-CN",
+        id: location.pathname,
+        distractionFreeMode: false,
+        
+    })
+    gitalk.render("gitalk-container")
+</script>
+
 
     </body>
 

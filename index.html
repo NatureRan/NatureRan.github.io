@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
         <title>NatureRan</title>
         <meta name="author" content="Nature">
-        <meta name="description" content="NatureRan ">
+        <meta name="description" content="">
         <meta name="keywords" content="java">
         <link rel="icon" href="https://raw.githubusercontent.com/NatureRan/Images/main/benghuai11-headImg.jpg">
         <script src="https://cdn.staticfile.org/instant.page/5.1.0/instantpage.min.js" type="module"></script>
@@ -131,7 +131,7 @@
             <div class="wrap">
                 <h1>NatureRan</h1>
                 <h3>Welcome To Ran&#39;s Blog</h3>
-                <h5>NatureRan </h5>
+                <h5></h5>
             </div>
         </span>
     </div>
@@ -144,7 +144,7 @@
             
 
 <div class="post">
-    <a href="/2022/09/02/Docker基础理论/">
+    <a href="/cl7o7hz10000p8uxkfe2a6s18/">
         <h2 class="post-title">03、Docker基础理论</h2>
     </a>
     <div class="category-and-date">
@@ -159,221 +159,11 @@
     <div class="excerpt">
         <div class="content" v-pre>
             
-            <p><font color='red'><strong>容器的本质是一种特殊的进程</strong></font></p>
+            <font color='red' size=5>
+容器的本质是一种特殊的进程
+</font>
+
 <p><strong>是一个受Linux中Namespace和Cgropes隔离和限制作用的进程</strong></p>
-<h1 id="1、Namespace技术"><a href="#1、Namespace技术" class="headerlink" title="1、Namespace技术"></a>1、Namespace技术</h1><p><strong>尝试在linux中创建一个进程</strong></p>
-<p><strong>创建进程使用</strong>clone函数<strong>，正常情况下创建一个进程如下所示，main_function就是新建进程中需要执行的函数。</strong></p>
-<pre><code class="C">int pid = clone(main_function, stack_size, SIGCHLD, NULL); 
-</code></pre>
-<p><strong>使用Namespace方式创建进程只需要多加一个参数 CLONE_NEWPID：</strong></p>
-<pre><code class="C">int pid = clone(main_function, stack_size, CLONE_NEWPID | SIGCHLD, NULL); 
-</code></pre>
-<p><strong>这时，新创建的这个进程将会“看到”一个全新的进程空间，在这个进程空间里，它的 PID 是 1。之所以说“看到”，是因为这只是一个“障眼法”，在宿主机真实的进程空间里，这个进程的 PID 还是真实的数值，比如 100。</strong></p>
-<p><strong>而除了刚刚用到的 PID Namespace，Linux 操作系统还提供了 Mount、UTS、IPC、Network 和 User 这些 Namespace，用来对各种不同的进程上下文进行“障眼法”操作。比如，Mount Namespace，用于让被隔离进程只看到当前 Namespace 里的挂载点信息；Network Namespace，用于让被隔离进程看到当前 Namespace 里的网络设备和配置。</strong></p>
-<p><strong>完整代码如下：</strong></p>
-<pre><code class="C">#define _GNU_SOURCE
-#include &lt;sys/mount.h&gt; 
-#include &lt;sys/types.h&gt;
-#include &lt;sys/wait.h&gt;
-#include &lt;stdio.h&gt;
-#include &lt;sched.h&gt;
-#include &lt;signal.h&gt;
-#include &lt;unistd.h&gt;
-#define STACK_SIZE (1024 * 1024)
-static char container_stack[STACK_SIZE];
-char* const container_args[] = &#123;
-  &quot;/bin/bash&quot;,
-  NULL
-&#125;;
-
-int container_main(void* arg)
-&#123;  
-  printf(&quot;Container - inside the container!\n&quot;);
-  execv(container_args[0], container_args);
-  printf(&quot;Something&#39;s wrong!\n&quot;);
-  return 1;
-&#125;
-
-int main()
-&#123;
-  printf(&quot;Parent - start a container!\n&quot;);
-  int container_pid = clone(container_main, container_stack+STACK_SIZE, CLONE_NEWNS | SIGCHLD , NULL);
-  waitpid(container_pid, NULL, 0);
-  printf(&quot;Parent - container stopped!\n&quot;);
-  return 0;
-&#125;
-</code></pre>
-<p><strong>这段代码的功能非常简单：在 main 函数里，通过 clone() 系统调用创建了一个新的子进程 container_main，并且声明要为它启用 Mount Namespace（即：CLONE_NEWNS 标志）。</strong></p>
-<p><strong>而这个子进程执行的，是一个“&#x2F;bin&#x2F;bash”程序，也就是一个 shell。</strong></p>
-<p><strong>所以这个 shell 就运行在了 Mount Namespace 的隔离环境中。</strong></p>
-<p><strong>尝试编译运行这段代码</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z linux]# ls
-new_progress.c
-[root@iZbp1c0sait1zv807y3ok5Z linux]# gcc -o new_progress new_progress.c 
-[root@iZbp1c0sait1zv807y3ok5Z linux]# ls
-new_progress  new_progress.c
-[root@iZbp1c0sait1zv807y3ok5Z linux]# ./new_progress 
-Parent - start a container!
-Container - inside the container!
-[root@iZbp1c0sait1zv807y3ok5Z linux]# ls /tmp
-systemd-private-63160db9a84244739b18d8eeb2e90804-chronyd.service-6Kv0zf  systemd-private-63160db9a84244739b18d8eeb2e90804-mysqld.service-lBl3ri
-[root@iZbp1c0sait1zv807y3ok5Z linux]# exit
-exit
-Parent - container stopped!
-[root@iZbp1c0sait1zv807y3ok5Z linux]# ls /tmp
-systemd-private-63160db9a84244739b18d8eeb2e90804-chronyd.service-6Kv0zf  systemd-private-63160db9a84244739b18d8eeb2e90804-mysqld.service-lBl3ri
-[root@iZbp1c0sait1zv807y3ok5Z linux]# 
-</code></pre>
-<p><strong>看到第7,8行的输出后，其实控制台已经在一个新的bash里面了，可以看到执行了一次exit，正常输出Parent - container stopped! 并且在容器里和外面，看到的&#x2F;tmp目录下的文件是完全相同的。</strong></p>
-<p><strong>也就是说：</strong></p>
-<p><strong>即使开启了 Mount Namespace，容器进程看到的文件系统也跟宿主机完全一样。</strong></p>
-<p><strong>Mount Namespace 修改的，是容器进程对文件系统“挂载点”的认知。但是，这也就意味着，只有在“挂载”这个操作发生之后，进程的视图才会被改变。而在此之前，新创建的容器会直接继承宿主机的各个挂载点。</strong></p>
-<p><strong>所以在创建新进程时，除了声明要启用 Mount Namespace 之外，还可以告诉容器进程，有哪些目录需要重新挂载，就比如这个 &#x2F;tmp 目录。于是，我们在容器进程执行前可以添加一步重新挂载 &#x2F;tmp 目录的操作：</strong></p>
-<pre><code class="C">int container_main(void* arg)
-&#123;
-    printf(&quot;Container - inside the container!\n&quot;);
-    // 如果你的机器的根目录的挂载类型是shared，那必须先重新挂载根目录
-    // mount(&quot;&quot;, &quot;/&quot;, NULL, MS_PRIVATE, &quot;&quot;);
-    mount(&quot;none&quot;, &quot;/tmp&quot;, &quot;tmpfs&quot;, 0, &quot;&quot;);
-    execv(container_args[0], container_args);
-    printf(&quot;Something&#39;s wrong!\n&quot;);
-    return 1;
-&#125;
-</code></pre>
-<p><strong>mount(“none”, “&#x2F;tmp”, “tmpfs”, 0, “”);语句告诉了容器以 tmpfs（内存盘）格式，重新挂载了 &#x2F;tmp 目录。</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z linux]# gcc -o new_progress new_progress.c 
-[root@iZbp1c0sait1zv807y3ok5Z linux]# ./new_progress 
-Parent - start a container!
-Container - inside the container!
-[root@iZbp1c0sait1zv807y3ok5Z linux]# ls /tmp
-[root@iZbp1c0sait1zv807y3ok5Z linux]# 
-</code></pre>
-<p><strong>可以看到，这次 &#x2F;tmp 变成了一个空目录，这意味着重新挂载生效了。我们可以用 mount -l 检查一下：</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z linux]# mount -l | grep tmpfs
-tmpfs on /sys/fs/cgroup type tmpfs (ro,nosuid,nodev,noexec,mode=755)
-devtmpfs on /dev type devtmpfs (rw,nosuid,size=988852k,nr_inodes=247213,mode=755)
-tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev)
-tmpfs on /run type tmpfs (rw,nosuid,nodev,mode=755)
-tmpfs on /run/user/0 type tmpfs (rw,nosuid,nodev,relatime,size=201628k,mode=700)
-none on /tmp type tmpfs (rw,relatime)
-[root@iZbp1c0sait1zv807y3ok5Z linux]# 
-</code></pre>
-<p><strong>第7行显示的 &#x2F;tmp 确实已经是tmpfs的了，此时退出容器后，从宿主机中看是没有&#x2F;tmp挂载的。（然而实际操作看还是有，不知道是什么情况了）</strong></p>
-<p><strong>这就是 Mount Namespace 跟其他 Namespace 的使用略有不同的地方：它对容器进程视图的改变，一定是伴随着挂载操作（mount）才能生效。</strong></p>
-<p><strong>所以每当创建一个新容器时，都希望容器进程看到的文件系统就是一个独立的隔离环境，而不是继承自宿主机的文件系统。怎么才能做到这一点呢？不难想到，我们可以在容器进程启动之前重新挂载它的整个根目录“&#x2F;”。而由于 Mount Namespace 的存在，这个挂载对宿主机不可见，所以容器进程就可以在里面随便折腾了。</strong></p>
-<p><strong>当然，为了能够让容器的这个根目录看起来更“真实”，我们一般会在这个容器的根目录下挂载一个完整操作系统的文件系统，比如 Ubuntu16.04 的 ISO。这样，在容器启动之后，我们在容器里通过执行 “ls &#x2F;“ 查看根目录下的内容，就是 Ubuntu 16.04 的所有目录和文件。而这个挂载在容器根目录上、用来为容器进程提供隔离后执行环境的文件系统，就是所谓的“容器镜像”。它还有一个更为专业的名字，叫作：rootfs（根文件系统）。</strong></p>
-<p><strong>另外，需要明确的是，rootfs 只是一个操作系统所包含的文件、配置和目录，并不包括操作系统内核。在 Linux 操作系统中，这两部分是分开存放的，操作系统只有在开机启动时才会加载指定版本的内核镜像。所以说，rootfs 只包括了操作系统的“躯壳”，并没有包括操作系统的“灵魂”。</strong></p>
-<p><strong>实际上，同一台机器上的所有容器，都共享宿主机操作系统的内核。</strong></p>
-<p><strong>这就意味着，如果你的应用程序需要配置内核参数、加载额外的内核模块，以及跟内核进行直接的交互，你就需要注意了：这些操作和依赖的对象，都是宿主机操作系统的内核，它对于该机器上的所有容器来说是一个“全局变量”，牵一发而动全身。</strong></p>
-<h1 id="2、Linux-Cgroups"><a href="#2、Linux-Cgroups" class="headerlink" title="2、Linux Cgroups"></a>2、Linux Cgroups</h1><p><strong>Linux Cgroups 的全称是 Linux Control Group。它最主要的作用，就是限制一个进程组能够使用的资源上限，包括 CPU、内存、磁盘、网络带宽等等。</strong></p>
-<p><strong>在 Linux 中，Cgroups 给用户暴露出来的操作接口是文件系统，即它以文件和目录的方式组织在操作系统的 &#x2F;sys&#x2F;fs&#x2F;cgroup 路径下。</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# mount -t cgroup
-cgroup on /sys/fs/cgroup/systemd type cgroup (rw,nosuid,nodev,noexec,relatime,xattr,release_agent=/usr/lib/systemd/systemd-cgroups-agent,name=systemd)
-cgroup on /sys/fs/cgroup/pids type cgroup (rw,nosuid,nodev,noexec,relatime,pids)
-cgroup on /sys/fs/cgroup/net_cls,net_prio type cgroup (rw,nosuid,nodev,noexec,relatime,net_cls,net_prio)
-cgroup on /sys/fs/cgroup/freezer type cgroup (rw,nosuid,nodev,noexec,relatime,freezer)
-cgroup on /sys/fs/cgroup/perf_event type cgroup (rw,nosuid,nodev,noexec,relatime,perf_event)
-cgroup on /sys/fs/cgroup/rdma type cgroup (rw,nosuid,nodev,noexec,relatime,rdma)
-cgroup on /sys/fs/cgroup/blkio type cgroup (rw,nosuid,nodev,noexec,relatime,blkio)
-cgroup on /sys/fs/cgroup/devices type cgroup (rw,nosuid,nodev,noexec,relatime,devices)
-cgroup on /sys/fs/cgroup/cpu,cpuacct type cgroup (rw,nosuid,nodev,noexec,relatime,cpu,cpuacct)
-cgroup on /sys/fs/cgroup/memory type cgroup (rw,nosuid,nodev,noexec,relatime,memory)
-cgroup on /sys/fs/cgroup/hugetlb type cgroup (rw,nosuid,nodev,noexec,relatime,hugetlb)
-cgroup on /sys/fs/cgroup/cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,cpuset)
-[root@iZbp1c0sait1zv807y3ok5Z ~]# 
-</code></pre>
-<p><strong>它的输出结果，是一系列文件系统目录。如果你在自己的机器上没有看到这些目录，那你就需要自己去挂载 Cgroups。</strong></p>
-<p><strong>可以看到，在 &#x2F;sys&#x2F;fs&#x2F;cgroup 下面有很多诸如 cpuset、cpu、 memory 这样的子目录，也叫子系统。这些都是我这台机器当前可以被 Cgroups 进行限制的资源种类。而在子系统对应的资源种类下，你就可以看到该类资源具体可以被限制的方法。比如，对 CPU 子系统来说，我们就可以看到如下几个配置文件，这个指令是：</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# ls /sys/fs/cgroup/cpu
-aegis                  cpuacct.cgroup_wait_latency   cpuacct.usage              cpuacct.usage_user      cpu.cfs_quota_us   release_agent
-assist                 cpuacct.enable_sli            cpuacct.usage_all          cpuacct.wait_latency    cpu.identity       system.slice
-cgroup.clone_children  cpuacct.ioblock_latency       cpuacct.usage_percpu       cpu.bvt_warp_ns         cpu.shares         tasks
-cgroup.procs           cpuacct.proc_stat             cpuacct.usage_percpu_sys   cpu.cfs_burst_us        cpu.stat           user.slice
-cgroup.sane_behavior   cpuacct.sched_cfs_statistics  cpuacct.usage_percpu_user  cpu.cfs_init_buffer_us  docker
-cpuacct.block_latency  cpuacct.stat                  cpuacct.usage_sys          cpu.cfs_period_us       notify_on_release
-[root@iZbp1c0sait1zv807y3ok5Z ~]# 
-</code></pre>
-<p><strong>这里面有cfs_period 和 cfs_quota 这样的关键词。这两个参数需要组合使用，可以用来限制进程在长度为 cfs_period 的一段时间内，只能被分配到总量为 cfs_quota 的 CPU 时间。</strong></p>
-<p><strong>进入&#x2F;sys&#x2F;fs&#x2F;cgroup&#x2F;cpu这个目录，并再创建一个container目录，这个container目录就是一个“控制组”，目录下会自动生成该子系统对应的资源限制文件。</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# cd /sys/fs/cgroup/cpu
-[root@iZbp1c0sait1zv807y3ok5Z cpu]# mkdir container
-[root@iZbp1c0sait1zv807y3ok5Z cpu]# cd container/
-[root@iZbp1c0sait1zv807y3ok5Z container]# ls
-cgroup.clone_children        cpuacct.ioblock_latency       cpuacct.usage_all          cpuacct.usage_user      cpu.cfs_period_us  notify_on_release
-cgroup.procs                 cpuacct.proc_stat             cpuacct.usage_percpu       cpuacct.wait_latency    cpu.cfs_quota_us   tasks
-cpuacct.block_latency        cpuacct.sched_cfs_statistics  cpuacct.usage_percpu_sys   cpu.bvt_warp_ns         cpu.identity
-cpuacct.cgroup_wait_latency  cpuacct.stat                  cpuacct.usage_percpu_user  cpu.cfs_burst_us        cpu.shares
-cpuacct.enable_sli           cpuacct.usage                 cpuacct.usage_sys          cpu.cfs_init_buffer_us  cpu.stat
-[root@iZbp1c0sait1zv807y3ok5Z container]# 
-</code></pre>
-<p><strong>尝试执行一条脚本</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z container]# while : ; do : ; done &amp;
-[1] 273301
-[root@iZbp1c0sait1zv807y3ok5Z container]# 
-</code></pre>
-<p><strong>273301 就是这个脚本的后台进程id，使用top观察cpu使用情况，此时这个进程使用了98.7的cpu资源</strong></p>
-<pre><code class="shell">top - 15:02:17 up 168 days,  4:04,  1 user,  load average: 4.35, 1.93, 1.32
-Tasks:  99 total,   2 running,  97 sleeping,   0 stopped,   0 zombie
-%Cpu(s): 99.7 us,  0.0 sy,  0.0 ni,  0.0 id,  0.0 wa,  0.3 hi,  0.0 si,  0.0 st
-MiB Mem :   1969.0 total,    440.2 free,    630.3 used,    898.6 buff/cache
-MiB Swap:      0.0 total,      0.0 free,      0.0 used.   1193.1 avail Mem 
-
-    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                                                       
- 273301 root      20   0   20940   2688    640 R  98.7   0.1   0:47.92 bash   
-</code></pre>
-<p><strong>观察container目录下面的cpu.cfs_quota_us和cpu.cfs_period_us，发现cpu quota没有限制（-1），cpu period是默认的100ms（100000us）</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z container]# cat cpu.cfs_quota_us 
--1
-[root@iZbp1c0sait1zv807y3ok5Z container]# cat cpu.cfs_period_us 
-100000
-[root@iZbp1c0sait1zv807y3ok5Z container]# 
-</code></pre>
-<p><strong>修改这两个文件内容来限制cpu资源的使用，比如将cpu quota时间设置为20ms，这样就意味着该进程在每个100ms期间只能使用cpu20ms，cpu占用将被控制在20%。</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z container]# echo 20000 &gt; cpu.cfs_quota_us 
-</code></pre>
-<p><strong>同时需要把限制进程的pid写入tasks文件</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z container]# echo 273301 &gt; tasks
-</code></pre>
-<pre><code class="shell">top - 15:23:29 up 168 days,  4:25,  1 user,  load average: 3.95, 5.14, 3.39
-Tasks:  98 total,   2 running,  96 sleeping,   0 stopped,   0 zombie
-%Cpu(s): 21.0 us,  0.3 sy,  0.0 ni, 77.7 id,  0.0 wa,  0.7 hi,  0.3 si,  0.0 st
-MiB Mem :   1969.0 total,    439.6 free,    630.7 used,    898.7 buff/cache
-MiB Swap:      0.0 total,      0.0 free,      0.0 used.   1192.6 avail Mem 
-
-    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                                                       
- 273301 root      20   0   20940   2704    640 R  20.3   0.1   7:18.07 bash   
-</code></pre>
-<p><strong>除 CPU 子系统外，Cgroups 的每一个子系统都有其独有的资源限制能力，比如：</strong></p>
-<p><strong>blkio，为块设备设定I&#x2F;O 限制，一般用于磁盘等设备；</strong></p>
-<p><strong>cpuset，为进程分配单独的 CPU 核和对应的内存节点；</strong></p>
-<p><strong>memory，为进程设定内存使用的限制。</strong></p>
-<p><strong>因此对于 Docker 等 Linux 容器项目来说，它们只需要在每个子系统下面，为每个容器创建一个控制组（即创建一个新目录），然后在启动容器进程之后，把这个进程的 PID 填写到对应控制组的 tasks 文件中就可以了。而至于在这些控制组下面的资源文件里填上什么值，就靠用户执行 docker run 时的参数指定了，比如这样一条命令：</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z docker]# docker run -d --cpu-period=100000 --cpu-quota=20000 myspringboot:v1
-f74631b7712d0203dfe9f23d6b28d52beaf1ad53ccb40cc193cc927c03f27fe7
-</code></pre>
-<p><strong>容器id是 f74631b7712d0203dfe9f23d6b28d52beaf1ad53ccb40cc193cc927c03f27fe7</strong></p>
-<p><strong>查看下docker目录，会生成一个f74631b7712d0203dfe9f23d6b28d52beaf1ad53ccb40cc193cc927c03f27fe7的目录，里面的cpu.cfs_quota_us被设置成了20000</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# cd /sys/fs/cgroup/cpu/docker
-[root@iZbp1c0sait1zv807y3ok5Z docker]# ls
-cgroup.clone_children        cpuacct.sched_cfs_statistics  cpuacct.usage_sys       cpu.cfs_quota_us
-cgroup.procs                 cpuacct.stat                  cpuacct.usage_user      cpu.identity
-cpuacct.block_latency        cpuacct.usage                 cpuacct.wait_latency    cpu.shares
-cpuacct.cgroup_wait_latency  cpuacct.usage_all             cpu.bvt_warp_ns         cpu.stat
-cpuacct.enable_sli           cpuacct.usage_percpu          cpu.cfs_burst_us        f74631b7712d0203dfe9f23d6b28d52beaf1ad53ccb40cc193cc927c03f27fe7
-cpuacct.ioblock_latency      cpuacct.usage_percpu_sys      cpu.cfs_init_buffer_us  notify_on_release
-cpuacct.proc_stat            cpuacct.usage_percpu_user     cpu.cfs_period_us       tasks
-[root@iZbp1c0sait1zv807y3ok5Z docker]# cd f74631b7712d0203dfe9f23d6b28d52beaf1ad53ccb40cc193cc927c03f27fe7/
-[root@iZbp1c0sait1zv807y3ok5Z f74631b7712d0203dfe9f23d6b28d52beaf1ad53ccb40cc193cc927c03f27fe7]# ls
-cgroup.clone_children        cpuacct.ioblock_latency       cpuacct.usage_all          cpuacct.usage_user      cpu.cfs_period_us  notify_on_release
-cgroup.procs                 cpuacct.proc_stat             cpuacct.usage_percpu       cpuacct.wait_latency    cpu.cfs_quota_us   tasks
-cpuacct.block_latency        cpuacct.sched_cfs_statistics  cpuacct.usage_percpu_sys   cpu.bvt_warp_ns         cpu.identity
-cpuacct.cgroup_wait_latency  cpuacct.stat                  cpuacct.usage_percpu_user  cpu.cfs_burst_us        cpu.shares
-cpuacct.enable_sli           cpuacct.usage                 cpuacct.usage_sys          cpu.cfs_init_buffer_us  cpu.stat
-[root@iZbp1c0sait1zv807y3ok5Z f74631b7712d0203dfe9f23d6b28d52beaf1ad53ccb40cc193cc927c03f27fe7]# cat cpu.cfs_quota_us 
-20000
-[root@iZbp1c0sait1zv807y3ok5Z f74631b7712d0203dfe9f23d6b28d52beaf1ad53ccb40cc193cc927c03f27fe7]# 
-</code></pre>
-
             
         </div>
     </div>
@@ -386,17 +176,17 @@ cpuacct.enable_sli           cpuacct.usage                 cpuacct.usage_sys    
         
         <span class="tag">
             
-            <a href="/tags/Docker/" style="color: #ffa2c4">
+            <a href="/tags/Docker/" style="color: #00bcd4">
                 Docker
             </a>
         </span>
         
     </div>
-    <a href="/2022/09/02/Docker基础理论/" class="go-post">阅读全文</a>
+    <a href="/cl7o7hz10000p8uxkfe2a6s18/" class="go-post">阅读全文</a>
 </div>
 
 <div class="post">
-    <a href="/2022/09/02/Dockerfile的使用/">
+    <a href="/cl7o7hz0f00018uxk2a8i4e19/">
         <h2 class="post-title">02、Dockerfile的使用</h2>
     </a>
     <div class="category-and-date">
@@ -415,59 +205,6 @@ cpuacct.enable_sli           cpuacct.usage                 cpuacct.usage_sys    
 <p><strong>例如：基于openjdk8创建一个新镜像</strong></p>
 <pre><code>FROM openjdk:8-jdk-oraclelinux8
 </code></pre>
-<h2 id="COPY"><a href="#COPY" class="headerlink" title="COPY"></a>COPY</h2><p><strong>拷贝，将Dockerfile上下文的一些文件拷贝到容器的指定路径中</strong></p>
-<p><strong>例如：将jar包拷贝到容器&#x2F;opt 目录下</strong></p>
-<pre><code>COPY target/EurekaService-2.4.6.jar /opt
-</code></pre>
-<h2 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h2><p><strong>仅仅只是声明端口。</strong></p>
-<p><strong>作用：</strong></p>
-<p><strong>帮助镜像使用者理解这个镜像服务的守护端口，以方便配置映射。</strong></p>
-<p><strong>在运行时使用随机端口映射时，也就是 docker run -P 时，会自动随机映射 EXPOSE 的端口。</strong></p>
-<p><strong>例如：EurekaService的端口是8761</strong></p>
-<pre><code>EXPOSE 8761
-</code></pre>
-<h2 id="CMD"><a href="#CMD" class="headerlink" title="CMD"></a>CMD</h2><p><strong>用于运行主要程序</strong></p>
-<p><strong>例如：运行镜像时需要启动EurekaService</strong></p>
-<pre><code>CMD java -jar -Xms128M -Xmx256m /opt/EurekaService-2.4.6.jar
-</code></pre>
-<p><strong>RUN</strong></p>
-<p><strong>用于执行后面跟着的命令行命令</strong></p>
-<pre><code>FROM centos 
-RUN yum -y install wget 
-RUN wget -O redis.tar.gz &quot;http://download.redis.io/releases/redis-5.0.3.tar.gz&quot; 
-RUN tar -xvf redis.tar.gz
-</code></pre>
-<p><strong>注意：Dockerfile 的指令每执行一次都会在 docker 上新建一层。所以过多无意义的层，会造成镜像膨胀过大。所以上面的写法可以简化为</strong></p>
-<pre><code>FROM centos 
-RUN yum -y install wget \   
-  &amp;&amp; wget -O redis.tar.gz &quot;http://download.redis.io/releases/redis-5.0.3.tar.gz&quot; \   
-  &amp;&amp; tar -xvf redis.tar.gz
-</code></pre>
-<p><strong>开始构建镜像</strong></p>
-<p><strong>在 Dockerfile 文件的存放目录下，执行构建动作。</strong></p>
-<p><strong>命令 docker build -t [镜像名]:[tag名] .</strong></p>
-<p><strong>如果过Dockerfile不在当前目录下，将末尾的‘.’ 换成Dockerfile所在的目录</strong></p>
-<pre><code class="shell">(base) nature@naturedeMacBook-Pro:MyTestProject/MySpringBoot ‹master*›$ docker build -t eureka:2.4.6 .
-[+] Building 6.0s (8/8) FINISHED                                                                                                                                                      
-=&gt; [internal] load build definition from Dockerfile                                                                                                                                   0.0s
-=&gt; =&gt; transferring dockerfile: 37B                                                                                                                                                    0.0s
-=&gt; [internal] load .dockerignore                                                                                                                                                      0.0s
-=&gt; =&gt; transferring context: 2B                                                                                                                                                        0.0s
-=&gt; [internal] load metadata for docker.io/library/openjdk:8-jdk-oraclelinux8                                                                                                          2.8s
-=&gt; [auth] library/openjdk:pull token for registry-1.docker.io                                                                                                                         0.0s
-=&gt; [internal] load build context                                                                                                                                                      2.3s
-=&gt; =&gt; transferring context: 46.97MB                                                                                                                                                   2.2s
-=&gt; CACHED [1/2] FROM docker.io/library/openjdk:8-jdk-oraclelinux8@sha256:9d4c9fe13622b123b6b2950395daf45fa0333dee5746a630d4120731601e99ff                                             0.0s
-=&gt; [2/2] COPY target/EurekaService-2.4.6.jar /opt                                                                                                                                     0.4s
-=&gt; exporting to image                                                                                                                                                                 0.5s
-=&gt; =&gt; exporting layers                                                                                                                                                                0.5s
-=&gt; =&gt; writing image sha256:e0bf981ac313fa7005e1dc33ea6670d2bc4e189159aa7b7ac20bb431c6235278                                                                                           0.0s
-=&gt; =&gt; naming to docker.io/library/eureka:2.4.6                                                                                                                                        0.0s
-
-Use &#39;docker scan&#39; to run Snyk tests against images to find vulnerabilities and learn how to fix them
-(base) nature@naturedeMacBook-Pro:MyTestProject/MySpringBoot ‹master*›$ 
-</code></pre>
-
             
         </div>
     </div>
@@ -480,17 +217,17 @@ Use &#39;docker scan&#39; to run Snyk tests against images to find vulnerabiliti
         
         <span class="tag">
             
-            <a href="/tags/Docker/" style="color: #ffa2c4">
+            <a href="/tags/Docker/" style="color: #03a9f4">
                 Docker
             </a>
         </span>
         
     </div>
-    <a href="/2022/09/02/Dockerfile的使用/" class="go-post">阅读全文</a>
+    <a href="/cl7o7hz0f00018uxk2a8i4e19/" class="go-post">阅读全文</a>
 </div>
 
 <div class="post">
-    <a href="/2022/09/02/Docker安装和基本用法/">
+    <a href="/cl7o7hz12000s8uxkd57g9ecy/">
         <h2 class="post-title">01、Docker安装和基本用法</h2>
     </a>
     <div class="category-and-date">
@@ -509,266 +246,6 @@ Use &#39;docker scan&#39; to run Snyk tests against images to find vulnerabiliti
 <pre><code>curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
 </code></pre>
 <p><strong>其他安装方式：</strong><a target="_blank" rel="noopener" href="https://www.runoob.com/docker/centos-docker-install.html">CentOS Docker 安装 | 菜鸟教程 (runoob.com)</a></p>
-<h1 id="镜像使用"><a href="#镜像使用" class="headerlink" title="镜像使用"></a>镜像使用</h1><h2 id="1、查看镜像"><a href="#1、查看镜像" class="headerlink" title="1、查看镜像"></a>1、查看镜像</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker images
-REPOSITORY        TAG                  IMAGE ID       CREATED        SIZE
-myspringboot      v1                   77b3d6313b00   11 days ago    407MB
-nature608/java8   centos-8.5           0ef78548e3cd   11 days ago    822MB
-openjdk           8-jdk-oraclelinux8   a269b19bda98   2 weeks ago    359MB
-centos            latest               5d0da3dc9764   7 months ago   231MB
-ubuntu            15.10                9b9cb95443b5   5 years ago    137MB
-</code></pre>
-<p><strong>各个选项说明:</strong></p>
-<p> <strong>REPOSITORY：</strong> <strong>表示镜像的仓库源</strong></p>
-<p> <strong>TAG：</strong> <strong>镜像的标签</strong></p>
-<p> <strong>IMAGE ID：</strong> <strong>镜像ID</strong></p>
-<p> <strong>CREATED：</strong> <strong>镜像创建时间</strong></p>
-<p> <strong>SIZE：</strong> <strong>镜像大小</strong></p>
-<h2 id="2、使用镜像运行容器"><a href="#2、使用镜像运行容器" class="headerlink" title="2、使用镜像运行容器"></a>2、使用镜像运行容器</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker run -it ubuntu:15.10 /bin/bash
-root@a8d1c080a1d5:/# 
-</code></pre>
-<p><strong>参数说明：</strong></p>
-<p><strong>-i: 交互式操作。</strong></p>
-<p><strong>-t: 终端。</strong></p>
-<p><strong>ubuntu:15.10: 这是指用 ubuntu 15.10 版本镜像为基础来启动容器。</strong></p>
-<p><strong>&#x2F;bin&#x2F;bash：放在镜像名后的是命令，这里我们希望有个交互式 Shell，因此用的是 &#x2F;bin&#x2F;bash。</strong></p>
-<p><strong>如果你不指定一个镜像的版本标签，例如你只使用 ubuntu，docker 将默认使用 ubuntu:latest 镜像。</strong></p>
-<h2 id="3、获取一个新镜像"><a href="#3、获取一个新镜像" class="headerlink" title="3、获取一个新镜像"></a>3、获取一个新镜像</h2><p><strong>当我们在本地主机上使用一个不存在的镜像时 Docker 就会自动下载这个镜像。如果我们想预先下载这个镜像，我们可以使用 docker pull 命令来下载它。</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker pull ubuntu:13.10
-</code></pre>
-<h2 id="4、删除镜像"><a href="#4、删除镜像" class="headerlink" title="4、删除镜像"></a>4、删除镜像</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker rmi ubuntu:13.10
-</code></pre>
-<p><strong>或者使用IMAGE ID</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker rmi 7f020f7bf345
-</code></pre>
-<h2 id="5、创建镜像"><a href="#5、创建镜像" class="headerlink" title="5、创建镜像"></a>5、创建镜像</h2><p><strong>当我们从 docker 镜像仓库中下载的镜像不能满足我们的需求时，我们可以通过以下两种方式对镜像进行更改。</strong></p>
-<p><strong>1、从已经创建的容器中更新镜像，并且提交这个镜像</strong></p>
-<p><strong>2、使用 Dockerfile 指令来创建一个新的镜像</strong></p>
-<h3 id="更新镜像"><a href="#更新镜像" class="headerlink" title="更新镜像"></a>更新镜像</h3><p><strong>更新镜像之前，我们需要使用镜像来创建一个容器。</strong></p>
-<p><strong>在完成操作之后，输入 exit 命令来退出这个容器。</strong></p>
-<p><strong>此时 ID 为 148444bfd3fa 的容器，是按我们的需求更改的容器。我们可以通过命令 docker commit 来提交容器副本。</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker run -it ubuntu:15.10 /bin/bash
-root@a8d1c080a1d5:/# apt-get update
-...
-root@148444bfd3fa:/# exit
-exit
-[root@iZbp1c0sait1zv807y3ok5Z ~]# docker commit -m=&#39;apt-get update&#39; -a=&#39;natrue&#39; 148444bfd3fa nature/unbutu:v2
-sha256:d8726aad226a231d1b0b33b6625ede043c9cb24e14809e418dc9b9f8ab3eb588
-[root@iZbp1c0sait1zv807y3ok5Z ~]# 
-</code></pre>
-<p><strong>各个参数说明：</strong></p>
-<p><strong>-m:</strong> 提交的描述信息</p>
-<p><strong>-a:</strong> 指定镜像作者</p>
-<p> <strong>e218edb10161：</strong> <strong>容器 ID</strong></p>
-<p><strong>runoob&#x2F;ubuntu:v2:</strong> 指定要创建的目标镜像名</p>
-<p><strong>我们可以使用 docker images 命令来查看我们的新镜像 nature&#x2F;ubuntu:v2：</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker images
-REPOSITORY        TAG                  IMAGE ID       CREATED              SIZE
-nature/unbutu     v2                   d8726aad226a   About a minute ago   137MB
-myspringboot      v1                   77b3d6313b00   11 days ago          407MB
-nature608/java8   centos-8.5           0ef78548e3cd   11 days ago          822MB
-openjdk           8-jdk-oraclelinux8   a269b19bda98   2 weeks ago          359MB
-centos            latest               5d0da3dc9764   7 months ago         231MB
-ubuntu            15.10                9b9cb95443b5   5 years ago          137MB
-</code></pre>
-<h3 id="构建镜像"><a href="#构建镜像" class="headerlink" title="构建镜像"></a>构建镜像</h3><p><strong>使用命令 docker build ， 从零开始来创建一个新的镜像。为此，我们需要创建一个 Dockerfile 文件，其中包含一组指令来告诉 Docker 如何构建我们的镜像。</strong></p>
-<p><strong>参数：</strong></p>
-<p><strong>-t   后面指定镜像名和tag</strong></p>
-<p><strong>EurekaService 是Dockerfile所在的目录，如果Dockerfile在当前目录则使用’.’代替 docker build -t eureka:2.4.6 .</strong></p>
-<pre><code class="shell">(base) nature@naturedeMacBook-Pro:MyTestProject/MySpringBoot ‹master*›$ docker build -t eureka:2.4.6 EurekaService
-[+] Building 6.0s (8/8) FINISHED                                                                                                                                                        
- =&gt; [internal] load build definition from Dockerfile                                                                                                                                   0.0s
- =&gt; =&gt; transferring dockerfile: 37B                                                                                                                                                    0.0s
- =&gt; [internal] load .dockerignore                                                                                                                                                      0.0s
- =&gt; =&gt; transferring context: 2B                                                                                                                                                        0.0s
- =&gt; [internal] load metadata for docker.io/library/openjdk:8-jdk-oraclelinux8                                                                                                          2.8s
- =&gt; [auth] library/openjdk:pull token for registry-1.docker.io                                                                                                                         0.0s
- =&gt; [internal] load build context                                                                                                                                                      2.3s
- =&gt; =&gt; transferring context: 46.97MB                                                                                                                                                   2.2s
- =&gt; CACHED [1/2] FROM docker.io/library/openjdk:8-jdk-oraclelinux8@sha256:9d4c9fe13622b123b6b2950395daf45fa0333dee5746a630d4120731601e99ff                                             0.0s
- =&gt; [2/2] COPY target/EurekaService-2.4.6.jar /opt                                                                                                                                     0.4s
- =&gt; exporting to image                                                                                                                                                                 0.5s
- =&gt; =&gt; exporting layers                                                                                                                                                                0.5s
- =&gt; =&gt; writing image sha256:e0bf981ac313fa7005e1dc33ea6670d2bc4e189159aa7b7ac20bb431c6235278                                                                                           0.0s
- =&gt; =&gt; naming to docker.io/library/eureka:2.4.6                                                                                                                                        0.0s
-
-Use &#39;docker scan&#39; to run Snyk tests against images to find vulnerabilities and learn how to fix them
-(base) nature@naturedeMacBook-Pro:MyTestProject/MySpringBoot ‹master*›$ 
-</code></pre>
-<h1 id="容器操作"><a href="#容器操作" class="headerlink" title="容器操作"></a>容器操作</h1><h2 id="1、通过镜像启动容器"><a href="#1、通过镜像启动容器" class="headerlink" title="1、通过镜像启动容器"></a>1、通过镜像启动容器</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker run -itd ubuntu:15.10 /bin/bash
-root@a8d1c080a1d5:/# exit
-exit
-[root@iZbp1c0sait1zv807y3ok5Z ~]# 
-</code></pre>
-<p><strong>参数说明：</strong></p>
-<p><strong>-i: 交互式操作。</strong></p>
-<p><strong>-t: 终端。</strong></p>
-<p><strong>-d: 后台运行（没有-d参数，在exit后容器会停止运行）</strong></p>
-<p><strong>ubuntu: ubuntu 镜像。</strong></p>
-<p><strong>&#x2F;bin&#x2F;bash：放在镜像名后的是命令，这里我们希望有个交互式 Shell，因此用的是 &#x2F;bin&#x2F;bash。</strong></p>
-<p><strong>–name：可以指定容器名称</strong></p>
-<p>**要退出终端，直接输入 ** <strong>exit</strong> <strong>:</strong></p>
-<h2 id="2、查看容器列表"><a href="#2、查看容器列表" class="headerlink" title="2、查看容器列表"></a>2、查看容器列表</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker ps -a
-CONTAINER ID   IMAGE             COMMAND                  CREATED       STATUS       PORTS                                       NAMES
-3768a28f0839   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   11 days ago   Up 11 days   0.0.0.0:8080-&gt;8080/tcp, :::8080-&gt;8080/tcp   determined_blackwell
-[root@iZbp1c0sait1zv807y3ok5Z ~]# 
-</code></pre>
-<p><strong>说明：</strong></p>
-<p><strong>CONTAINER ID：容器id</strong></p>
-<p><strong>IMAGE：对应的镜像</strong></p>
-<p><strong>COMMAND：容器内运行的命令</strong></p>
-<p><strong>CREATED：容器创建时间</strong></p>
-<p><strong>STATUS：UP-运行中 EXITED-停止中</strong></p>
-<p><strong>PORTS：端口映射</strong></p>
-<p><strong>NAMES：容器名字，可以重命名</strong></p>
-<h2 id="3、启动-x2F-停止已有的容器"><a href="#3、启动-x2F-停止已有的容器" class="headerlink" title="3、启动&#x2F;停止已有的容器"></a>3、启动&#x2F;停止已有的容器</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker stop 3768a28f0839
-3768a28f0839
-[root@iZbp1c0sait1zv807y3ok5Z ~]# docker start 3768a28f0839
-3768a28f0839
-[root@iZbp1c0sait1zv807y3ok5Z ~]# docker restart 3768a28f0839
-3768a28f0839
-</code></pre>
-<h2 id="4、进入-x2F-退出容器"><a href="#4、进入-x2F-退出容器" class="headerlink" title="4、进入&#x2F;退出容器"></a>4、进入&#x2F;退出容器</h2><p>在使用 <strong>-d</strong> 参数时，容器启动后会进入后台。此时想要进入容器，可以通过以下指令进入：</p>
-<p><strong>docker attach</strong></p>
-<p> <strong>docker exec</strong> <strong>：推荐使用 docker exec 命令，因为此命令会退出容器终端，但不会导致容器的停止。</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker attach 3768a28f0839
-2022-04-19 02:45:01.256  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
-2022-04-19 02:45:01.371  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2022-04-19 02:45:01.372  INFO 1 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.21]
-2022-04-19 02:45:01.625  INFO 1 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/learn]  : Initializing Spring embedded WebApplicationContext
-2022-04-19 02:45:01.625  INFO 1 --- [           main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 5440 ms
-2022-04-19 02:45:02.153  INFO 1 --- [           main] c.y.liteflow.spring.ComponentScanner     : component[g] has been found
-2022-04-19 02:45:02.184  INFO 1 --- [           main] c.y.liteflow.spring.ComponentScanner     : component[c] has been found
-2022-04-19 02:45:02.200  INFO 1 --- [           main] c.y.liteflow.spring.ComponentScanner     : component[d] has been found
-2022-04-19 02:45:02.201  INFO 1 --- [           main] c.y.liteflow.spring.ComponentScanner     : component[f] has been found
-2022-04-19 02:45:02.205  INFO 1 --- [           main] c.y.liteflow.spring.ComponentScanner     : component[a] has been found
-2022-04-19 02:45:02.206  INFO 1 --- [           main] c.y.liteflow.spring.ComponentScanner     : component[b] has been found
-2022-04-19 02:45:02.207  INFO 1 --- [           main] c.y.liteflow.spring.ComponentScanner     : component[e] has been found
-2022-04-19 02:45:02.846  INFO 1 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService &#39;applicationTaskExecutor&#39;
-2022-04-19 02:45:02.955  INFO 1 --- [           main] c.a.c.s.SentinelWebAutoConfiguration     : [Sentinel Starter] register SentinelWebInterceptor with urlPatterns: [/**].
-2022-04-19 02:45:03.359  INFO 1 --- [           main] com.yomahub.liteflow.core.FlowExecutor   : flow info loaded from local file,path=ruleConfig/flow.xml,format type=xml
-2022-04-19 02:45:04.479  WARN 1 --- [           main] arterDeprecationWarningAutoConfiguration : spring-boot-starter-redis is deprecated as of Spring Boot 1.4, please migrate to spring-boot-starter-data-redis
-2022-04-19 02:45:04.911  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path &#39;/learn&#39;
-2022-04-19 02:45:04.918  INFO 1 --- [           main] c.n.m.MyspringbootApplication            : Started MyspringbootApplication in 11.074 seconds (JVM running for 12.141)
-INFO: log output type is: file
-INFO: log charset is: utf-8
-INFO: log base dir is: /root/logs/csp/
-INFO: log name use pid is: false
-2022-04-19 02:45:05.060  INFO 1 --- [           main] c.n.m.sentinel.init.FlowRuleInitFunc     : 限流规则初始化
-2022-04-19 02:45:05.066  INFO 1 --- [           main] c.n.m.sentinel.init.FlowRuleInitFunc     : 限流规则初始化完成
-^C2022-04-19 02:46:23.052  INFO 1 --- [       Thread-5] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService &#39;applicationTaskExecutor&#39;
-[root@iZbp1c0sait1zv807y3ok5Z ~]# docker ps -a
-CONTAINER ID   IMAGE             COMMAND                  CREATED       STATUS                        PORTS     NAMES
-3768a28f0839   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   11 days ago   Exited (130) 49 seconds ago             determined_blackwell
-[root@iZbp1c0sait1zv807y3ok5Z ~]# 
-</code></pre>
-<p><strong>由于容器里正在运行java进程，所以attach容器可以直接看到打印日志，使用command+c停止进程后，容器也自动停止了</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker exec -it 3768a28f0839 /bin/bash
-bash-4.4# exit
-exit
-[root@iZbp1c0sait1zv807y3ok5Z ~]# docker ps -a
-CONTAINER ID   IMAGE             COMMAND                  CREATED       STATUS         PORTS                                       NAMES
-3768a28f0839   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   11 days ago   Up 2 minutes   0.0.0.0:8080-&gt;8080/tcp, :::8080-&gt;8080/tcp   determined_blackwell
-[root@iZbp1c0sait1zv807y3ok5Z ~]# 
-</code></pre>
-<p><strong>参数说明：</strong></p>
-<p><strong>-i: 交互式操作。</strong></p>
-<p><strong>-t: 终端。</strong></p>
-<p><strong>&#x2F;bin&#x2F;bash：放在容器id后的是命令，这里我们希望有个交互式 Shell，因此用的是 &#x2F;bin&#x2F;bash。</strong></p>
-<p><strong>此时进入容器并且开启了一个bash进程，这样exit的时候只会终止bash进程，不会停止容器中的主进程。</strong></p>
-<h2 id="5、删除容器"><a href="#5、删除容器" class="headerlink" title="5、删除容器"></a>5、删除容器</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker rm 3768a28f0839
-Error response from daemon: You cannot remove a running container 3768a28f083923ba82c7853ae931b2c42a0e105a704672b130b40c962b04b2c4. Stop the container before attempting removal or force remove
-[root@iZbp1c0sait1zv807y3ok5Z ~]# 
-</code></pre>
-<p><strong>运行中的容器不能被删除，必须先停止。或者使用docker rm -f 3768a28f0839 强制删除</strong></p>
-<p><strong>docker container prune 可以清除所有终止状态的容器</strong></p>
-<h2 id="6、导入-x2F-导出容器"><a href="#6、导入-x2F-导出容器" class="headerlink" title="6、导入&#x2F;导出容器"></a>6、导入&#x2F;导出容器</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker export 3768a28f0839 &gt; myspringbootv1.tar
-[root@iZbp1c0sait1zv807y3ok5Z ~]# ls
-myspringbootv1.tar
-[root@iZbp1c0sait1zv807y3ok5Z ~]# 
-</code></pre>
-<p><strong>docker export导出容器3768a28f0839 到本地文件myspringbootv1.tar</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker import myspringbootv1.tar myspringboot:v2
-sha256:e751aada4696c580ed8c2509b3e2f3dd727cb1ba49c15d4041dcd5a9df4177a1
-[root@iZbp1c0sait1zv807y3ok5Z ~]# docker images
-REPOSITORY        TAG                  IMAGE ID       CREATED         SIZE
-myspringboot      v2                   e751aada4696   4 seconds ago   401MB
-myspringboot      v1                   77b3d6313b00   11 days ago     407MB
-nature608/java8   centos-8.5           0ef78548e3cd   11 days ago     822MB
-openjdk           8-jdk-oraclelinux8   a269b19bda98   2 weeks ago     359MB
-centos            latest               5d0da3dc9764   7 months ago    231MB
-ubuntu            15.10                9b9cb95443b5   5 years ago     137MB
-[root@iZbp1c0sait1zv807y3ok5Z ~]# 
-</code></pre>
-<p><strong>docker import 将导出的容器导入，导入后会变成一个镜像，名字为myspringboot tag为v2</strong></p>
-<p><strong>此外，也可以通过指定 URL 或者某个目录来导入，例如：</strong></p>
-<pre><code class="shell">$ docker import http://example.com/exampleimage.tgz example/imagerepo
-</code></pre>
-<h1 id="容器连接"><a href="#容器连接" class="headerlink" title="容器连接"></a>容器连接</h1><h2 id="1、容器端口映射"><a href="#1、容器端口映射" class="headerlink" title="1、容器端口映射"></a>1、容器端口映射</h2><pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker run -d -p 8090:8080 myspringboot:v1
-9c370ac40a952178055cd26409a58c1a6893a2d767b3273e0a473f7ea3a586e4
-[root@iZbp1c0sait1zv807y3ok5Z ~]# docker ps -a
-CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS         PORTS                                       NAMES
-9c370ac40a95   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   5 seconds ago    Up 4 seconds   0.0.0.0:8090-&gt;8080/tcp, :::8090-&gt;8080/tcp   eager_mclaren
-3768a28f0839   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   2 weeks ago      Up 2 days      0.0.0.0:8080-&gt;8080/tcp, :::8080-&gt;8080/tcp   determined_blackwell
-[root@iZbp1c0sait1zv807y3ok5Z ~]#
-</code></pre>
-<p><strong>-p 参数可以指定端口映射 -p 8090:8080 表示将容器的8080端口映射到宿主机的8090端口上，也可以指定ip地址，-p 127.0.0.1:8090:8080，默认ip为0.0.0.0</strong></p>
-<p><strong>-P 这个参数不需要再指定端口 它是容器内部端口随机映射到主机的端口（容器内部端口一般会写在Dockerfile下）</strong></p>
-<h2 id="2、端口映射查看"><a href="#2、端口映射查看" class="headerlink" title="2、端口映射查看"></a>2、端口映射查看</h2><p><strong>docker ps -a 可以看到映射信息</strong></p>
-<p><strong>也可以用docker port [容器id | 容器名称]查看</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker ps -a
-CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS          PORTS                                       NAMES
-9c370ac40a95   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   41 seconds ago   Up 40 seconds   0.0.0.0:8090-&gt;8080/tcp, :::8090-&gt;8080/tcp   eager_mclaren
-3768a28f0839   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   2 weeks ago      Up 2 days       0.0.0.0:8080-&gt;8080/tcp, :::8080-&gt;8080/tcp   determined_blackwell
-[root@iZbp1c0sait1zv807y3ok5Z ~]# docker port 9c370ac40a95 8080
-0.0.0.0:8090
-:::8090
-[root@iZbp1c0sait1zv807y3ok5Z ~]# docker port eager_mclaren 8080
-0.0.0.0:8090
-:::8090
-[root@iZbp1c0sait1zv807y3ok5Z ~]# 
-</code></pre>
-<h2 id="3、容器互联"><a href="#3、容器互联" class="headerlink" title="3、容器互联"></a>3、容器互联</h2><p><strong>创建一个docker网络</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker network create -d bridge test-net
-479a089acedcfe644a31d9172f220547edf63be62938f406f8d6ba22fdf10a25
-[root@iZbp1c0sait1zv807y3ok5Z ~]# docker network ls
-NETWORK ID     NAME       DRIVER    SCOPE
-27250b04a274   bridge     bridge    local
-62b204f11532   host       host      local
-dbca65784678   none       null      local
-479a089acedc   test-net   bridge    local
-[root@iZbp1c0sait1zv807y3ok5Z ~]# 
-</code></pre>
-<p><strong>参数说明：</strong></p>
-<p> <strong>-d</strong> <strong>：参数指定 Docker 网络类型，有 bridge、overlay。</strong></p>
-<p><strong>其中 overlay 网络类型用于 Swarm mode，在本小节中你可以忽略它。</strong></p>
-<p><strong>test-net就是网络的名称</strong></p>
-<p><strong>运行容器并连接到test-net网络</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker run -d --name test1 --network test-net myspringboot:v2
-1e82da9b5d04f691662a64d557cdcc72782a0e84d6c32f4d3d06aeaebdd88f43
-[root@iZbp1c0sait1zv807y3ok5Z ~]# docker run -d --name test2 --network test-net myspringboot:v2
-529a7ddc6515d0413c2b51614a02ad211855365016aa91c3342785cbc9b9f7c4
-[root@iZbp1c0sait1zv807y3ok5Z ~]# docker ps -a
-CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS          PORTS                                       NAMES
-529a7ddc6515   myspringboot:v2   &quot;/bin/sh -c &#39;java -j…&quot;   7 seconds ago    Up 5 seconds    8080/tcp                                    test2
-1e82da9b5d04   myspringboot:v2   &quot;/bin/sh -c &#39;java -j…&quot;   13 seconds ago   Up 12 seconds   8080/tcp                                    test1
-3768a28f0839   myspringboot:v1   &quot;/bin/sh -c &#39;java -j…&quot;   2 weeks ago      Up 2 days       0.0.0.0:8080-&gt;8080/tcp, :::8080-&gt;8080/tcp   determined_blackwell
-[root@iZbp1c0sait1zv807y3ok5Z ~]# 
-</code></pre>
-<p><strong>进入test1容器，ping test2，发现网络是连通的</strong></p>
-<pre><code class="shell">[root@iZbp1c0sait1zv807y3ok5Z ~]# docker exec -it test1 /bin/bash
-[root@1e82da9b5d04 /]# ping test2
-PING test2 (172.18.0.3) 56(84) bytes of data.
-64 bytes from test2.test-net (172.18.0.3): icmp_seq=1 ttl=64 time=0.114 ms
-64 bytes from test2.test-net (172.18.0.3): icmp_seq=2 ttl=64 time=0.088 ms
-64 bytes from test2.test-net (172.18.0.3): icmp_seq=3 ttl=64 time=0.081 ms
-64 bytes from test2.test-net (172.18.0.3): icmp_seq=4 ttl=64 time=0.077 ms
-^C
---- test2 ping statistics ---
-4 packets transmitted, 4 received, 0% packet loss, time 3068ms
-rtt min/avg/max/mdev = 0.077/0.090/0.114/0.014 ms
-[root@1e82da9b5d04 /]# 
-</code></pre>
-
             
         </div>
     </div>
@@ -787,11 +264,11 @@ rtt min/avg/max/mdev = 0.077/0.090/0.114/0.014 ms
         </span>
         
     </div>
-    <a href="/2022/09/02/Docker安装和基本用法/" class="go-post">阅读全文</a>
+    <a href="/cl7o7hz12000s8uxkd57g9ecy/" class="go-post">阅读全文</a>
 </div>
 
 <div class="post">
-    <a href="/2022/09/02/SpringBoot事务提交后执行后续操作/">
+    <a href="/cl7o7hz0o00088uxkdigzgznq/">
         <h2 class="post-title">SpringBoot事务提交后执行后续操作</h2>
     </a>
     <div class="category-and-date">
@@ -820,60 +297,6 @@ rtt min/avg/max/mdev = 0.077/0.090/0.114/0.014 ms
 <li>操作A操作数据库失败后，事务回滚，那么操作B不能执行。</li>
 <li>操作A执行成功后，操作B也必须执行成功</li>
 </ul>
-<h2 id="如何实现"><a href="#如何实现" class="headerlink" title="如何实现"></a>如何实现</h2><ul>
-<li>普通的执行A，之后执行B，是可以满足要求1，对于要求2通常需要设计补偿的操作</li>
-<li>一般边缘的操作，通常会设置成为异步的，以提升性能，比如发送MQ，业务系统负责事务成功后消息发送成功，然后接收系统负责保证通知成功完成</li>
-</ul>
-<h2 id="实现方案"><a href="#实现方案" class="headerlink" title="实现方案"></a>实现方案</h2><h3 id="使用TransactionSynchronizationManager在事务提交之后操作"><a href="#使用TransactionSynchronizationManager在事务提交之后操作" class="headerlink" title="使用TransactionSynchronizationManager在事务提交之后操作"></a>使用TransactionSynchronizationManager在事务提交之后操作</h3><pre><code class="java">@Component
-public class CallBackService &#123;
-
-    public void execute(final CallBackAction action) &#123;
-
-        if (TransactionSynchronizationManager.isActualTransactionActive()) &#123;
-            TransactionSynchronizationManager
-                    .registerSynchronization(new TransactionSynchronizationAdapter() &#123;
-                        @Override
-                        public void afterCommit() &#123;
-                            // 事务提交后执行回调
-                            action.callback();
-                        &#125;
-                    &#125;);
-        &#125; else &#123;
-            // 事务提交后执行回调
-            action.callback();
-        &#125;
-
-    &#125;
-
-&#125;
-</code></pre>
-<pre><code class="java">public interface CallBackAction &#123;
-    /**
-     * 普通事务回调
-     */
-    void callback();
-&#125;
-</code></pre>
-<ul>
-<li><p>有了上述两个类，就可以实现在一个事务提交后将消息发送到队列或是其他操作，具体操作如下</p>
-</li>
-<li><p>假设在一个业务下，往数据库插入了一条记录，然后向队列发送一条消息</p>
-<pre><code class="java">@Override
-@Transactional()
-public void save() &#123;
-    User user1 = new User();
-    User user2 = new User();
-    userMapper.insert(user1);
-    userMapper.insert(user2);
-    // 在事务提交后执行
-    callBackService.execute(() -&gt; &#123;
-        // ...
-    &#125;);
-&#125;
-</code></pre>
-</li>
-</ul>
-
             
         </div>
     </div>
@@ -892,11 +315,11 @@ public void save() &#123;
         </span>
         
     </div>
-    <a href="/2022/09/02/SpringBoot事务提交后执行后续操作/" class="go-post">阅读全文</a>
+    <a href="/cl7o7hz0o00088uxkdigzgznq/" class="go-post">阅读全文</a>
 </div>
 
 <div class="post">
-    <a href="/2022/09/02/Okhttp3证书请求/">
+    <a href="/cl7o7hz0m00068uxkelurcugh/">
         <h2 class="post-title">OkHttp3使用证书发起请求</h2>
     </a>
     <div class="category-and-date">
@@ -921,117 +344,8 @@ public void save() &#123;
         <div class="content" v-pre>
             
             <blockquote>
-<p> 最近在对接微信支付功能，微信所有接口都采用okHttp3请求，但是申请退款接口需要证书才能调用，那如何使用证书发起请求以及证书如何获取，先看一下微信开发文档</p>
+<p>最近在对接微信支付功能，微信所有接口都采用okHttp3请求，但是申请退款接口需要证书才能调用，那如何使用证书发起请求以及证书如何获取，先看一下微信开发文档</p>
 </blockquote>
-<ol>
-<li>在微信支付接口中，涉及资金回滚的接口会使用到API证书，包括退款、撤销接口。商家在申请微信支付成功后，收到的相应邮件后，可以按照指引下载API证书，也可以按照以下路径下载：微信商户平台(pay.weixin.qq.com)–&gt;账户中心–&gt;账户设置–&gt;API安全 。证书文件说明如下：</li>
-</ol>
-<table>
-<thead>
-<tr>
-<th>证书附件</th>
-<th>描述</th>
-<th>使用场景</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>pkcs12格式(apiclient_cert.p12、</td>
-<td>包含了私钥信息的证书文件，为p12(pfx)格式，由微信支付签发给您用来标识和界定您的身份</td>
-<td>撤销、退款申请API中调用</td>
-<td>windows上可以直接双击导入系统，导入过程中会提示输入证书密码，证书密码默认为您的商户ID（如：10010000）</td>
-</tr>
-</tbody></table>
-<ul>
-<li>以下两个证书在PHP环境中使用：</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>证书附件</th>
-<th>描述</th>
-<th>使用场景</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>证书pem格式（apiclient_cert.pem）</td>
-<td>从apiclient_cert.p12中导出证书部分的文件，为pem格式，请妥善保管不要泄漏和被他人复制</td>
-<td>PHP等不能直接使用p12文件，而需要使用pem，为了方便您使用，已为您直接提供</td>
-<td>您也可以使用openssl命令来自己导出：openssl pkcs12 -clcerts -nokeys -in apiclient_cert.p12 -out apiclient_cert.pem）</td>
-</tr>
-<tr>
-<td>证书密钥pem格式（apiclient_key.pem）</td>
-<td>从apiclient_key.pem中导出密钥部分的文件，为pem格式，请妥善保管不要泄漏和被他人复制</td>
-<td>PHP等不能直接使用p12文件，而需要使用pem，为了方便您使用，已为您直接提供</td>
-<td>您也可以使用openssl命令来自己导出：openssl pkcs12 -nocerts -in apiclient_cert.p12 -out apiclient_key.pem</td>
-</tr>
-</tbody></table>
-<ol start="2">
-<li>使用API证书<ul>
-<li>apiclient_cert.p12是商户证书文件，除PHP外的开发均使用此证书文件。</li>
-<li>商户如果使用.NET环境开发，请确认Framework版本大于2.0，必须在操作系统上双击安装证书apiclient_cert.p12后才能被正常调用。</li>
-<li>API证书调用或安装需要使用到密码，该密码的值为微信商户号（mch_id）</li>
-</ul>
-</li>
-<li>API证书安全<ul>
-<li>证书文件不能放在web服务器虚拟目录，应放在有访问权限控制的目录中，防止被他人下载；</li>
-<li>建议将证书文件名改为复杂且不容易猜测的文件名；</li>
-<li>商户服务器要做好病毒和木马防护工作，不被非法侵入者窃取证书文件。</li>
-</ul>
-</li>
-<li>商户回调API安全<ul>
-<li>在普通的网络环境下，HTTP请求存在DNS劫持、运营商插入广告、数据被窃取，正常数据被修改等安全风险。商户回调接口使用HTTPS协议可以保证数据传输的安全性。所以微信支付建议商户提供给微信支付的各种回调采用HTTPS协议。</li>
-</ul>
-</li>
-</ol>
-<blockquote>
-<p>以上就是微信对于API证书的说明，从微信商户平台上可以下载对应的证书，每个商户id都会对应一个证书，发起请求的时候需要使用对应的证书才可以</p>
-</blockquote>
-<ul>
-<li><p>我们把证书文件 ***.p12文件发在 resource&#x2F;assets 目录下，创建带证书的OkHttpClient方法如下：</p>
-<pre><code class="java">SSLContext sslContext = getSSLContextByAppKey(appKey);
-if (sslContext == null) &#123;
-    restLogger.info(&quot;获取证书失败&quot;);
-    return null;
-&#125;
-OkHttpClient client = new OkHttpClient().newBuilder().sslSocketFactory(sslContext.getSocketFactory()).build();
-</code></pre>
-</li>
-<li><p>获取SSLContext的方法如下：</p>
-<pre><code class="java">private SSLContext getSSLContextByAppKey(String mchId) &#123;
-    // 设置证书路径
-    String certPath = String.format(&quot;assets/%s.p12&quot;, mchId);
-    // 设置证书密码
-    String certPass = mchId;
-    // 获取证书
-    return getSSLContext(certPath, certPass);
-&#125;
-private SSLContext getSSLContext(String certPath, String certPass) &#123;
-    try &#123;
-        KeyStore clientStore = KeyStore.getInstance(&quot;PKCS12&quot;);
-        // 读取resource下的文件 支持jar方式启动
-        Resource resource = new ClassPathResource(certPath);
-        InputStream inputStream = resource.getInputStream();
-        char[] passArray = certPass.toCharArray();
-        clientStore.load(inputStream, passArray);
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        kmf.init(clientStore, passArray);
-        KeyManager[] kms = kmf.getKeyManagers();
-        SSLContext sslContext = SSLContext.getInstance(&quot;TLSv1&quot;);
-        sslContext.init(kms, null, new SecureRandom());
-        return sslContext;
-    &#125; catch (Exception e) &#123;
-        restLogger.info(&quot;设置证书出错&quot;);
-    &#125;
-    return null;
-&#125;
-</code></pre>
-</li>
-<li><p>按上述方式获取到的OkHttpClient就就能带着证书发起https请求了</p>
-</li>
-</ul>
-
             
         </div>
     </div>
@@ -1044,31 +358,31 @@ private SSLContext getSSLContext(String certPath, String certPass) &#123;
         
         <span class="tag">
             
-            <a href="/tags/Java/" style="color: #00bcd4">
+            <a href="/tags/Java/" style="color: #ffa2c4">
                 Java
             </a>
         </span>
         
         <span class="tag">
             
-            <a href="/tags/OkHttp3/" style="color: #ffa2c4">
+            <a href="/tags/OkHttp3/" style="color: #ff7d73">
                 OkHttp3
             </a>
         </span>
         
         <span class="tag">
             
-            <a href="/tags/WeChat/" style="color: #03a9f4">
+            <a href="/tags/WeChat/" style="color: #ffa2c4">
                 WeChat
             </a>
         </span>
         
     </div>
-    <a href="/2022/09/02/Okhttp3证书请求/" class="go-post">阅读全文</a>
+    <a href="/cl7o7hz0m00068uxkelurcugh/" class="go-post">阅读全文</a>
 </div>
 
 <div class="post">
-    <a href="/2022/09/02/GuavaCache/">
+    <a href="/cl7o7hz11000q8uxk4ato2pd7/">
         <h2 class="post-title">Guava Caches文档</h2>
     </a>
     <div class="category-and-date">
@@ -1104,161 +418,6 @@ private SSLContext getSSLContext(String certPath, String certPass) &#123;
              &#125;
            &#125;);
 </code></pre>
-<h3 id="适用性"><a href="#适用性" class="headerlink" title="适用性"></a>适用性</h3><p><strong>缓存用非常广泛的使用场景，例如，当一个变量需要耗费巨大的资源来计算或检索得到并且你不止一次需要用到这个变量，你就需要考虑使用缓存。</strong></p>
-<p><em><strong>Cache</strong></em> 类似于  <em><strong>ConcurrentMap</strong></em>，但也不完全相同，最根本的区别就是 <em><strong>ConcurrentMap</strong></em> 会保留所有被存储的元素直到它们被移除，相反 <em><strong>Cache</strong></em> 为了限制自身的内存占用，通常会按配置好的方式自动清除键值对。在某些场景下 <em><strong>LoadingCache</strong></em> 由于可以自动加载缓存，即使不使用自动清除键值对，它也非常好用。</p>
-<p><strong>通常来说guava cache工具适用于以下一些场景：</strong></p>
-<ul>
-<li><strong>你想使用一些内存空间来改善程序运行速度</strong></li>
-<li><strong>一些keys会被多次使用</strong></li>
-<li><strong>你的缓存相对于机器内存来说占用量不是特别大（guava cache属于本地缓存，它是运行在单机应用上的，它不会把缓存存储到文件或其他服务器上面。如果这些不满足的需求，你需要考虑其他缓存工具比如</strong><a target="_blank" rel="noopener" href="http://memcached.org/"><em><strong>Memcached</strong></em></a>）</li>
-</ul>
-<p><strong>如果以上全部满足你的使用场景，那么guava cache工具将非常适合你！</strong></p>
-<p>获得一个 <em><strong>Cache</strong></em> 对象只需要像示例中一样通过 <em><strong>CacheBuilder</strong></em> 的建造者模式创建，但是定制化你自己的 <em><strong>Cache</strong></em> 对象才是有意思的部分</p>
-<p><strong>Note:如果你不需要使用 <em><strong>Cache</strong></em> 的特性，那么 <em><strong>ConcurrentHashMap</strong></em> 将更省内存，但是在任何老的 <em><strong>ConcurrentMap</strong></em> 上实现 <em><strong>Cache</strong></em> 的特性是非常困难甚至不可能的。</strong></p>
-<h3 id="综述"><a href="#综述" class="headerlink" title="综述"></a>综述</h3><p><strong>第一个关于缓存的问题便是，是否存在一个好用的默认方法来加载或计算一个key的值，如果有的话，你应该使用 <em><strong>CacheLoader</strong></em> 对象，如果没有或者说你需要重写这个默认方法，但是仍然想要一个满足”get-if-absent-compute”语法的原子操作，你应该在 <em><strong>get()</strong></em> 方法中传入一个 <em><strong>Callable</strong></em> 对象。使用 <em><strong>Cache.put</strong></em> 方法可以使元素立刻加入到缓存中去，但是自动化缓存加载更好是因为它更容易解决缓存内容一致性的问题。</strong></p>
-<h5 id="使用CacheLoader"><a href="#使用CacheLoader" class="headerlink" title="使用CacheLoader"></a>使用CacheLoader</h5><p><em><strong>LoadingCache</strong></em> 是一个 <em><strong>Cache</strong></em> 在build中附带了一个<a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheLoader.html"><em><strong>CacheLoader</strong></em></a>。创建一个 <em><strong>CacheLoader</strong></em> 对象并实现 <em><strong>V load(K key) throws Exception</strong></em> 方法非常简单。因此，你可以用以下方式创建一个 <em><strong>LoadingCache</strong></em> 对象：</p>
-<pre><code class="java">LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
-       .maximumSize(1000)
-       .build(
-           new CacheLoader&lt;Key, Graph&gt;() &#123;
-             public Graph load(Key key) throws AnyException &#123;
-               return createExpensiveGraph(key);
-             &#125;
-           &#125;);
-...
-try &#123;
-  return graphs.get(key);
-&#125; catch (ExecutionException e) &#123;
-  throw new OtherException(e.getCause());
-&#125;
-</code></pre>
-<p><strong>典型的查询 <em><strong>LoadingCache</strong></em> 的方式是使用 <em><strong>get(k)</strong></em> 方法，这将会返回一个已经存在的缓存值，或者使用 <em><strong>CacheLoader</strong></em> 自动加载一个新的值到缓存中去。由于 <em><strong>CacheLoader</strong></em> 可能会抛出一个 <em><strong>Exception</strong></em> ，因此 <em><strong>LoadingCache.get(K)</strong></em> 会抛出  <em><strong>ExecutionException</strong></em></strong> （如果 <em><strong>CacheLoader</strong></em> 抛出的是非受检异常， <em><strong>get(k)</strong></em> 方法将会抛出 <em><strong>UncheckedExecutionException</strong></em> 来替换）。你也可以选择使用 <em><strong>getUnchecked(K)</strong></em> 方法，它会把所有异常都替换成 <em><strong>UncheckedExecutionException</strong></em> ，但是如果底层的 <em><strong>CacheLoader</strong></em> 抛出受检异常可能会导致一些意外的情况。</p>
-<pre><code class="java">LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
-       .expireAfterAccess(10, TimeUnit.MINUTES)
-       .build(
-           new CacheLoader&lt;Key, Graph&gt;() &#123;
-             public Graph load(Key key) &#123; // no checked exception
-               return createExpensiveGraph(key);
-             &#125;
-           &#125;);
-...
-return graphs.getUnchecked(key);
-</code></pre>
-<p><strong>批量查找可以使用 <em><strong>getAll(Iterable&lt;? extends K&gt;)</strong></em> 方法。</strong> 在默认情况下， <em><strong>getAll</strong></em> 方法会对每个不存在于缓存中的key轮流调用 <em><strong>CacheLoader.load</strong></em> 方法。当批量检索比多个单次查询效率更高时，你可以重写 <em><strong>CacheLoader.loadAll</strong></em> 方法来开发这个功能， <em><strong>getAll(Iterable)</strong></em> 方法的性能将会有显著改善。 记住你可以重写 <em><strong>CacheLoader.loadAll</strong></em> 方法来批量加载缓存。例如：XXX</p>
-<h5 id="关于Callable"><a href="#关于Callable" class="headerlink" title="关于Callable"></a>关于Callable</h5><p><strong>所有guava cache对象，不管用没有加载过数据，都支持 <em><strong>get(K, Callable)</strong></em> 方法，这个方法会返回缓存中已存在key值，若不存在，将会调用实现好的 <em><strong>Callable</strong></em> 方法来将值加载到缓存中。没有规定声明缓存在加载完成前不会被修改，这个方法提供了一个简单可替代的通俗模式“缓存存在即返回，不存在则创建”。</strong></p>
-<pre><code class="java">Cache&lt;Key, Value&gt; cache = CacheBuilder.newBuilder()
-    .maximumSize(1000)
-    .build(); // look Ma, no CacheLoader
-...
-try &#123;
-  // If the key wasn&#39;t in the &quot;easy to compute&quot; group, we need to
-  // do things the hard way.
-  cache.get(key, new Callable&lt;Value&gt;() &#123;
-    @Override
-    public Value call() throws AnyException &#123;
-      return doThingsTheHardWay(key);
-    &#125;
-  &#125;);
-&#125; catch (ExecutionException e) &#123;
-  throw new OtherException(e.getCause());
-&#125;
-</code></pre>
-<h5 id="直接插入缓存"><a href="#直接插入缓存" class="headerlink" title="直接插入缓存"></a>直接插入缓存</h5><p><strong>通过 <em><strong>cache.put(key, value)</strong></em> 方法可以直接将变量插入到缓存</strong>，这个操作会覆盖缓存中已存在key，变化后的值可以通过 <em><strong>Cache.asMap()</strong></em> 暴露出来的 <em><strong>ConcurrentMap</strong></em> 访问。需要注意的是 <em><strong>asMap</strong></em> 方法返回的对象不存在某个方法可以使数据自动加载到缓存。因此，在使用了 <em><strong>CacheLoader</strong></em> 或 <em><strong>Callable</strong></em> 实现的Cache中， <em><strong>Cache.get(K, Callable)</strong></em> 方法总是比 <em><strong>Cache.asMap().putIfAbsent</strong></em> 方法更好</p>
-<h3 id="回收"><a href="#回收" class="headerlink" title="回收"></a>回收</h3><p><strong>然而冷酷无情的现实便是我们总是没有足够的内存去缓存所有的东西，你必须要考虑好，一个缓存的键值对何时不再需要。Guava提供了三种基本类型的缓存回收，基于空间回收，基于时间回收，基于引用回收。</strong></p>
-<h4 id="基于空间回收"><a href="#基于空间回收" class="headerlink" title="基于空间回收"></a>基于空间回收</h4><p><strong>如果你的缓存不会超过一个具体的大小，使用</strong><a target="_blank" rel="noopener" href="https://guava.dev/releases/snapshot/api/docs/com/google/common/cache/CacheBuilder.html#maximumSize-long-"><em><strong>CacheBuilder.maximumSize(long)</strong></em></a> 来设置缓存最大存储空间，缓存将会自动尝试去回收一些不常用的键值对。警告：在最大缓存空间溢出之前，缓存就有可能会去回收键值对，尤其是快要溢出的时候。</p>
-<p><strong>如果不同的缓存键值对有不同的“weights”，比如你的缓存键值对占用的内存空间截然不同——你可以具体实现一个</strong><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheBuilder.html#weigher-com.google.common.cache.Weigher-"><em><strong>CacheBuilder.weigher(Weigher)</strong></em></a> 方法，并且设置 <em><strong>CacheBuilder.maximumWeight(long)</strong></em> 属性。除了 <em><strong>maximumSize</strong></em> 要求的警告事项之外，你需要注意weights是在键值对创建时就计算得出了，并且计算得出后不再变化。</p>
-<pre><code class="java">LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
-       .maximumWeight(100000)
-       .weigher(new Weigher&lt;Key, Graph&gt;() &#123;
-          public int weigh(Key k, Graph g) &#123;
-            return g.vertices().size();
-          &#125;
-        &#125;)
-       .build(
-           new CacheLoader&lt;Key, Graph&gt;() &#123;
-             public Graph load(Key key) &#123; // no checked exception
-               return createExpensiveGraph(key);
-             &#125;
-           &#125;);
-</code></pre>
-<h4 id="基于时间回收"><a href="#基于时间回收" class="headerlink" title="基于时间回收"></a>基于时间回收</h4><p><em><strong>CacheBuilder</strong></em> 提供了两种处理方式来实现时间回收：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheBuilder.html#expireAfterAccess-long-java.util.concurrent.TimeUnit-"><em><strong>expireAfterAccess(long, TimeUnit)</strong></em></a> 一个键值对在最后一次读取后写入后经过指定的时间间隔就会被回收。需要注意的是键值对的回收顺序和基于空间回收的逻辑相似。</li>
-<li><a target="_blank" rel="noopener" href="https://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheBuilder.html#expireAfterWrite-long-java.util.concurrent.TimeUnit-"><em><strong>expireAfterWrite(long, TimeUnit)</strong></em></a> 当一个键值对被创建或被重新写入的是开始计时，指定时间之后被回收。如果缓存数据每过一段时间就需要被淘汰的话就非常适合使用这种方式。</li>
-</ul>
-<h5 id="测试时间回收"><a href="#测试时间回收" class="headerlink" title="测试时间回收"></a>测试时间回收</h5><p><strong>测试时间回收并不是一件很痛苦的事情，因为你并不需要花费两秒钟的时间来等待一个设置了两秒过期的缓存。使用</strong><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/base/Ticker.html"><em><strong>Ticker</strong></em></a>接口和<a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheBuilder.html#ticker-com.google.common.base.Ticker-"><em><strong>CacheBuilder.ticker(Ticker)</strong></em></a> 方法来指定一个时间源，而不是去等待系统时钟。</p>
-<h4 id="基于引用回收"><a href="#基于引用回收" class="headerlink" title="基于引用回收"></a>基于引用回收</h4><p><strong>Guava允许你使用GC机制来回收缓存，对keys或values使用</strong><a target="_blank" rel="noopener" href="http://docs.oracle.com/javase/6/docs/api/java/lang/ref/WeakReference.html"><em><strong>weak references</strong></em></a>，对values使用<a target="_blank" rel="noopener" href="http://docs.oracle.com/javase/6/docs/api/java/lang/ref/SoftReference.html"><em><strong>soft references</strong></em></a>。</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheBuilder.html#weakKeys--"><em><strong>CacheBuilder.weakKeys()</strong></em></a> 对keys使用弱引用，当没有其他对keys的强引用和软引用时，该键值对可以被GC。 符号来比较keys之间的相等，而不是 <em><strong>equals()</strong></em> 。</li>
-<li><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheBuilder.html#weakValues--"><em><strong>CacheBuilder.weakValues()</strong></em></a> 对values使用弱引用，当没有其他对values的强引用和软引用时，该键值对可以被GC。</li>
-<li><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheBuilder.html#softValues--"><em><strong>CacheBuilder.softValues()</strong></em></a> 用软引用的方式覆盖values，按照内存要求，软引用对象在全局least-recently-used方式下可以被GC。因为使用软引用的性能暗示，我通常推荐使用可预测性更好的<a target="_blank" rel="noopener" href="https://github.com/google/guava/wiki/CachesExplained#Size-based-Eviction"><em><strong>maximum cache size</strong></em></a>，使用 <em><strong>softValues()</strong></em> 会导致values之间的比较会使用 <em><strong>(&#x3D;&#x3D;)</strong></em> 符号而不是 <em><strong>equals()</strong></em> 。</li>
-</ul>
-<h4 id="删除缓存"><a href="#删除缓存" class="headerlink" title="删除缓存"></a>删除缓存</h4><p><strong>在任何时候，你可能明确知道要删除缓存而不是等待缓存被回收，以下可以实现：</strong></p>
-<ul>
-<li><strong>删除单个缓存，使用</strong><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/Cache.html#invalidate-java.lang.Object-"><em><strong>Cache.invalidate(key)</strong></em></a></li>
-<li><strong>批量删除缓存，使用</strong><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/Cache.html#invalidateAll-java.lang.Iterable-"><em><strong>Cache.invalidateAll(keys)</strong></em></a></li>
-<li><strong>删除全部缓存，使用</strong><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/Cache.html#invalidateAll--"><em><strong>Cache.invalidateAll()</strong></em></a></li>
-</ul>
-<h4 id="缓存删除监听器"><a href="#缓存删除监听器" class="headerlink" title="缓存删除监听器"></a>缓存删除监听器</h4><p><strong>你可以实现一个缓存删除监听器在缓存被删除的时候完成一些操作，通过</strong><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheBuilder.html#removalListener-com.google.common.cache.RemovalListener-"><em><strong>CacheBuilder.removalListener(RemovalListener)</strong></em></a> 注册监听器。<a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/RemovalListener.html"><em><strong>RemovalListener</strong></em></a>传入一个<a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/RemovalNotification.html"><em><strong>RemovalNotification</strong></em></a>参数，它详细指定了<a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/RemovalCause.html">RemovalCause</a>，key和value。 需要注意的是 <em><strong>RemovalListener</strong></em> 抛出的所有异常都会被吞掉并用Logger打印。</p>
-<pre><code class="java">CacheLoader&lt;Key, DatabaseConnection&gt; loader = new CacheLoader&lt;Key, DatabaseConnection&gt; () &#123;
-  public DatabaseConnection load(Key key) throws Exception &#123;
-    return openConnection(key);
-  &#125;
-&#125;;
-RemovalListener&lt;Key, DatabaseConnection&gt; removalListener = new RemovalListener&lt;Key, DatabaseConnection&gt;() &#123;
-  public void onRemoval(RemovalNotification&lt;Key, DatabaseConnection&gt; removal) &#123;
-    DatabaseConnection conn = removal.getValue();
-    conn.close(); // tear down properly
-  &#125;
-&#125;;
-return CacheBuilder.newBuilder()
-  .expireAfterWrite(2, TimeUnit.MINUTES)
-  .removalListener(removalListener)
-  .build(loader);
-</code></pre>
-<p> <strong>警告</strong> <strong>：缓存删除监听器默认情况下是同步执行的，当缓存维护器在正常执行时，缓存删除监听器的可能会拖慢你的缓存使用！如果你的缓存删除监听器效率不是很高，使用</strong><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/RemovalListeners.html#asynchronous-com.google.common.cache.RemovalListener-java.util.concurrent.Executor-"><em><strong>RemovalListeners.asynchronous(RemovalListener, Executor)</strong></em></a> 来装饰 <em><strong>RemovalListener</strong></em> 实现异步操作。</p>
-<h4 id="缓存是何时清除的"><a href="#缓存是何时清除的" class="headerlink" title="缓存是何时清除的"></a>缓存是何时清除的</h4><p><em><strong>CacheBuilder</strong></em> 创建的 <em><strong>Caches</strong></em> 对象不会“自动”清除缓存中的值。只有在写入操作时才会有少数维护操作，当写入操作较少时，会在偶然的读取操作时触发。 原因如下：如果我们想让 <em><strong>Caches</strong></em> 连续不断地去维护，我们需要创建一个线程，并且它的操作可能会和用户的操作去竞争锁。此外，一些环境会限制线程的创建，这会使得 <em><strong>CacheBuilder</strong></em> 在这些环境下不可用。 我们把选择权交给了你，如果你的缓存吞吐量很高，那你不需要担心缓存维护去执行对过期键值对的清除。如果你的缓存很少有写入操作，并且不希望缓存清除导致读取阻塞，你可以去创建你自己的维护线程定时调用 <a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/11.0.1/api/docs/com/google/common/cache/Cache.html#cleanUp--"><em><strong>Cache.cleanUp()</strong></em></a> 方法。 如果你想对一个写入频率较少的缓存定时使用缓存维护，可以使用 <a target="_blank" rel="noopener" href="http://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html"><em><strong>ScheduledExecutorService</strong></em></a></p>
-<h4 id="刷新"><a href="#刷新" class="headerlink" title="刷新"></a>刷新</h4><p><strong>缓存刷新和缓存回收不太一样</strong>，在<a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/LoadingCache.html#refresh-K-"><em><strong>LoadingCache.refresh(K)</strong></em></a> 这个方法的文档中，刷新一个key的值会往缓存中加载一个新的value，这个操作是可以异步的。缓存刷新的同时，老的value会被该方法返回。 如果刷新缓存的过程中抛出异常，那么老的value将被保留，同时该异常会被吞掉并通过logger打印出来。 重写 <em><strong>CacheLoader</strong></em> 的 <a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheLoader.html#reload-K-V-"><em><strong>CacheLoader.reload(K, V)</strong></em></a> 方法可以实现缓存刷新操作，这个方法允许你使用老value来计算出新的value。</p>
-<pre><code class="java">// Some keys don&#39;t need refreshing, and we want refreshes to be done asynchronously.
-LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
-       .maximumSize(1000)
-       .refreshAfterWrite(1, TimeUnit.MINUTES)
-       .build(
-           new CacheLoader&lt;Key, Graph&gt;() &#123;
-             public Graph load(Key key) &#123; // no checked exception
-               return getGraphFromDatabase(key);
-             &#125;
-             public ListenableFuture&lt;Graph&gt; reload(final Key key, Graph prevGraph) &#123;
-               if (neverNeedsRefresh(key)) &#123;
-                 return Futures.immediateFuture(prevGraph);
-               &#125; else &#123;
-                 // asynchronous!
-                 ListenableFutureTask&lt;Graph&gt; task = ListenableFutureTask.create(new Callable&lt;Graph&gt;() &#123;
-                   public Graph call() &#123;
-                     return getGraphFromDatabase(key);
-                   &#125;
-                 &#125;);
-                 executor.execute(task);
-                 return task;
-               &#125;
-             &#125;
-           &#125;);
-</code></pre>
-<p><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheBuilder.html#refreshAfterWrite-long-java.util.concurrent.TimeUnit-"><em><strong>CacheBuilder.refreshAfterWrite(long, TimeUnit)</strong></em></a> 方法可以实现缓存自动定时刷新。和 <em><strong>expireAfterWrite</strong></em> 方法不同的是，<em><strong>refreshAfterWrite</strong></em> 会使得key在指定时间后进行刷新，但实际上缓存刷新只会在键值对被查询时被触发（如果 <em><strong>CacheLoader.reload</strong></em> 方法时异步实现的，那查询不会因为刷新变得更慢）。例如，你同时设置了 <em><strong>refreshAfterWrite</strong></em> 和 <em><strong>expireAfterWrite</strong></em> ，那么这种情况下，就算这个键值对满足刷新条件，它的过期时间也不会被重置，因此当一个键值对满足刷新条件但没有被查询的话，它依然允许被回收。</p>
-<h3 id="特征"><a href="#特征" class="headerlink" title="特征"></a>特征</h3><h4 id="统计"><a href="#统计" class="headerlink" title="统计"></a>统计</h4><p><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/12.0/api/docs/com/google/common/cache/CacheBuilder.html#recordStats--"><em><strong>CacheBuilder.recordStats()</strong></em></a> 可以打开guava cache的数据收集功能， <a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/Cache.html#stats--"><em><strong>Cache.stats()</strong></em></a> 返回一个<a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheStats.html"><em><strong>CacheStats</strong></em></a> 对象，它能提供以下数据统计：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheStats.html#hitRate--"><em><strong>hitRate()</strong></em></a> 返回查询请求的命中率</li>
-<li><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheStats.html#averageLoadPenalty--"><em><strong>averageLoadPenalty()</strong></em></a> 加载新value的平均时间，单位：纳秒</li>
-<li><a target="_blank" rel="noopener" href="http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/cache/CacheStats.html#evictionCount--"><em><strong>evictionCount()</strong></em></a> 缓存回收的次数 除此之外还有许多其他的数据统计项，这些统计信息对于缓存调整至关重要，我们建议在性能要求较高的应用中多多注意这些数据指标。</li>
-</ul>
-<h4 id="asMap"><a href="#asMap" class="headerlink" title="asMap"></a>asMap</h4><p><strong>你可以使用 <em><strong>asMap</strong></em> 将任何一个 <em><strong>Cache</strong></em> 对象视为 <em><strong>ConcurrentMap</strong></em> ，但是 <em><strong>asMap</strong></em> 如何影响 <em><strong>Cache</strong></em> 这里需要解释：</strong></p>
-<ul>
-<li><em><strong>cache.asMap()</strong></em> 包含缓存中目前存储的所有键值对，因此例如：<em><strong>cache.asMap().keySet()</strong></em> 包含缓存中所有的keys</li>
-<li><em><strong>asMap().get(key)</strong></em> 本质上等同于 <em><strong>cache.getIfPresent(key)</strong></em> ，不会使得value被加载到缓存。这和 <em><strong>Map</strong></em> 的协议一致</li>
-<li><strong>缓存的访问时间会被任何读取和写入操作重置</strong>（包括 <em><strong>Cache.asMap().get(Object)</strong></em> 和 <em><strong>Cache.asMap().put(K, V)</strong></em> ），但是不包括 <em><strong>containsKey(Object)</strong></em> ，也不包括 <em><strong>Cache.asMap()</strong></em> 。因此比如：通过 <em><strong>cache.asMap().entrySet()</strong></em> 迭代键值对不会重置缓存的访问时间</li>
-</ul>
-<h3 id="中断"><a href="#中断" class="headerlink" title="中断"></a>中断</h3><p><strong>参考：</strong><a target="_blank" rel="noopener" href="https://github.com/google/guava/wiki/CachesExplained"><em><strong>https://github.com/google/guava/wiki/CachesExplained</strong></em></a></p>
-
             
         </div>
     </div>
@@ -1271,17 +430,17 @@ LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
         
         <span class="tag">
             
-            <a href="/tags/Java/" style="color: #03a9f4">
+            <a href="/tags/Java/" style="color: #ff7d73">
                 Java
             </a>
         </span>
         
     </div>
-    <a href="/2022/09/02/GuavaCache/" class="go-post">阅读全文</a>
+    <a href="/cl7o7hz11000q8uxk4ato2pd7/" class="go-post">阅读全文</a>
 </div>
 
 <div class="post">
-    <a href="/2022/08/31/红黑树/">
+    <a href="/cl7o7hz0i00038uxkbrp8gaat/">
         <h2 class="post-title">红黑树</h2>
     </a>
     <div class="category-and-date">
@@ -1610,7 +769,7 @@ LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
         </span>
         
     </div>
-    <a href="/2022/08/31/红黑树/" class="go-post">阅读全文</a>
+    <a href="/cl7o7hz0i00038uxkbrp8gaat/" class="go-post">阅读全文</a>
 </div>
 
              
@@ -1678,6 +837,12 @@ LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()
         <div></div>
         <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
                 target="_blank" rel="noopener" href="https://github.com/argvchs/hexo-theme-particlex">ParticleX Theme</a></div>
+        
+        <div>
+            备案号：<a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">
+                正在申请
+            </a>
+        </div>
         
     </div>
 </footer>
