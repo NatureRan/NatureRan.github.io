@@ -149,7 +149,7 @@
             
             <span class="tag">
                 
-                <a href="/tags/Java/" style="color: #ff7d73">
+                <a href="/tags/Java/" style="color: #ffa2c4">
                     Java
                 </a>
             </span>
@@ -161,6 +161,64 @@
         <div class="content-content">
             <!-- ![img](../images/红黑树/kangna01.jpg) -->
 
+<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><ol>
+<li>根节点是【黑色】</li>
+<li>每个节点要么是【黑色】要么是【红色】</li>
+<li>每个【红色】节点的两个子节点一定都是【黑色】</li>
+<li>每个叶子节点（NIL）都是【黑色】</li>
+<li>任意一个节点的路径到叶子节点所包含的【黑色】节点的数量是相同的—这个也称之为【黑色完美平衡】</li>
+<li>新插入的节点必须是【红色】-&gt; 如果插入节点是黑色，会直接破坏第5点</li>
+</ol>
+<p>红黑树的最大高度是 2logn，这看起来查找的效率并不是 AVL 树要好，红黑树的的添加和删除元素的时间复杂度是O(logn)，因为他不会退化成想二叉搜索树的链表的结构</p>
+<h1 id="与AVL树的比较"><a href="#与AVL树的比较" class="headerlink" title="与AVL树的比较"></a>与AVL树的比较</h1><ol>
+<li>AVL树的时间复杂度优于红黑树，但是对于现在的计算机，这种差别可以忽略</li>
+<li>红黑树的插入删除比AVL树更便于控制操作。</li>
+<li>红黑树整体性能略优于AVL树。（红黑树旋转情况少于AVL树）。这点是非常重要的</li>
+<li>如果是在查询很多增删少的情况下 AVL 树还是优于红黑树的，如果增删比较频繁，那红黑树绝对是完美的一种选择</li>
+</ol>
+<p><img src="/../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E7%BA%A2%E9%BB%91%E6%A0%9101.jpg" alt="红黑树形状"></p>
+<h1 id="构建流程"><a href="#构建流程" class="headerlink" title="构建流程"></a>构建流程</h1><ol>
+<li>当前红黑树为空树<ul>
+<li>插入节点位于根节点，直接将当前节点变成黑色</li>
+</ul>
+</li>
+<li>插入节点已存在于树中<ul>
+<li>替换节点值</li>
+</ul>
+</li>
+<li>插入节点的父节点是黑色<ul>
+<li>不做任何操作</li>
+</ul>
+</li>
+<li>插入父节点是红色（父节点是红色意味着父节点一定还有父节点，因为根节点是黑色的）<ol>
+<li>叔叔节点存在且是红色<ul>
+<li><img src="/../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E5%8F%98%E8%89%B2%E6%83%85%E5%86%B5%E5%89%8D.jpg" alt="img"> </li>
+<li>将P，U变成黑色，PP变成红色（由于PP变成了红色可能会影响上面的节点，所以需要从PP节点向上递归处理）</li>
+<li><img src="/../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E5%8F%98%E8%89%B2%E6%83%85%E5%86%B5%E5%90%8E.jpg" alt="img"></li>
+</ul>
+</li>
+<li>叔叔节点不存在或是黑色（旋转后主要节点是黑色，不会对上层树形状造成破坏，所以这种情况不需要向上递归）<ol>
+<li>LL形状<ul>
+<li><img src="/../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E6%97%8B%E8%BD%ACLL.jpg" alt="img"></li>
+</ul>
+</li>
+<li>LR形状<ul>
+<li><img src="/../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E6%97%8B%E8%BD%ACLR.jpg" alt="img"></li>
+</ul>
+</li>
+<li>RR形状<ul>
+<li><img src="/../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E6%97%8B%E8%BD%ACRR.jpg" alt="img"></li>
+</ul>
+</li>
+<li>RL形状<ul>
+<li><img src="/../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E6%97%8B%E8%BD%ACRL.jpg" alt="img"></li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
 <pre><code class="java">public class RBMap &#123;
 
     private Node root = null;
@@ -448,7 +506,7 @@
 
         </div>
         <div class="content-toc">
-            
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%8EAVL%E6%A0%91%E7%9A%84%E6%AF%94%E8%BE%83"><span class="toc-text">与AVL树的比较</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B"><span class="toc-text">构建流程</span></a></li></ol>
         </div>
     </div>
     
