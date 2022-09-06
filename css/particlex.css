@@ -1064,6 +1064,20 @@ footer .footer-icon {
 .article .content {
     margin: 50px 0;
 }
+.article .content .content-content {
+    width: 900px;
+    display: inline-block;
+}
+.article .content .content-toc {
+    float: right;
+    width: 250px;
+    height: 700px;
+    top: 100px;
+    position: sticky;
+    overflow: scroll;
+    overflow-x: auto;
+    overflow-y: auto;
+}
 #home-posts #posts .post,
 #home-card {
     top: -50px;
@@ -1276,7 +1290,7 @@ footer .footer-icon {
         margin-right: auto;
     }
     .article {
-        width: 900px;
+        width: 1200px;
     }
     .content .language {
         left: 30px;

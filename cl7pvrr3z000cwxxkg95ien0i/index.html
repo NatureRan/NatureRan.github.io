@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
-        <title>02、Dockerfile的使用 | NatureRan</title>
+        <title>SpringBoot事务提交后执行后续操作 | NatureRan</title>
         <meta name="author" content="Nature">
         <meta name="description" content="">
         <meta name="keywords" content="java">
@@ -122,7 +122,7 @@
                         
 <div class="article">
     <div>
-        <h1>02、Dockerfile的使用 </h1>
+        <h1>SpringBoot事务提交后执行后续操作 </h1>
     </div>
     <div class="info">
         <span class="date">
@@ -130,6 +130,15 @@
                 <svg class="fa-icon"><use xlink:href="#calendar-solid"></use></svg>
             </span>
             2022/9/2
+        </span>
+        
+        <span class="category">
+            <a href="/categories/工作记录/">
+                <span class="icon">
+                    <svg class="fa-icon"><use xlink:href="#bookmark-solid"></use></svg>
+                </span>
+                工作记录
+            </a>
         </span>
         
         
@@ -140,8 +149,8 @@
             
             <span class="tag">
                 
-                <a href="/tags/Docker/" style="color: #ff7d73">
-                    Docker
+                <a href="/tags/Java/" style="color: #ff7d73">
+                    Java
                 </a>
             </span>
             
@@ -149,65 +158,72 @@
         
     </div>
     <div class="content" v-pre>
-        <h1 id="Dockerfile常用命令"><a href="#Dockerfile常用命令" class="headerlink" title="Dockerfile常用命令"></a>Dockerfile常用命令</h1><h2 id="FROM"><a href="#FROM" class="headerlink" title="FROM"></a>FROM</h2><p><strong>当前镜像基于哪个镜像生成</strong></p>
-<p><strong>例如：基于openjdk8创建一个新镜像</strong></p>
-<pre><code>FROM openjdk:8-jdk-oraclelinux8
-</code></pre>
+        <div class="content-content">
+            <h2 id="业务场景"><a href="#业务场景" class="headerlink" title="业务场景"></a>业务场景</h2><p>业务需求上经常会有一些边缘操作，比如主流程操作A：用户报名课程操作入库，边缘操作B：发送邮件或短信通知。</p>
+<h2 id="业务要求"><a href="#业务要求" class="headerlink" title="业务要求"></a>业务要求</h2><ul>
+<li>操作A操作数据库失败后，事务回滚，那么操作B不能执行。</li>
+<li>操作A执行成功后，操作B也必须执行成功</li>
+</ul>
 <span id="more"></span>
 
-<h2 id="COPY"><a href="#COPY" class="headerlink" title="COPY"></a>COPY</h2><p><strong>拷贝，将Dockerfile上下文的一些文件拷贝到容器的指定路径中</strong></p>
-<p><strong>例如：将jar包拷贝到容器&#x2F;opt 目录下</strong></p>
-<pre><code>COPY target/EurekaService-2.4.6.jar /opt
-</code></pre>
-<h2 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h2><p><strong>仅仅只是声明端口。</strong></p>
-<p><strong>作用：</strong></p>
-<p><strong>帮助镜像使用者理解这个镜像服务的守护端口，以方便配置映射。</strong></p>
-<p><strong>在运行时使用随机端口映射时，也就是 docker run -P 时，会自动随机映射 EXPOSE 的端口。</strong></p>
-<p><strong>例如：EurekaService的端口是8761</strong></p>
-<pre><code>EXPOSE 8761
-</code></pre>
-<h2 id="CMD"><a href="#CMD" class="headerlink" title="CMD"></a>CMD</h2><p><strong>用于运行主要程序</strong></p>
-<p><strong>例如：运行镜像时需要启动EurekaService</strong></p>
-<pre><code>CMD java -jar -Xms128M -Xmx256m /opt/EurekaService-2.4.6.jar
-</code></pre>
-<p><strong>RUN</strong></p>
-<p><strong>用于执行后面跟着的命令行命令</strong></p>
-<pre><code>FROM centos 
-RUN yum -y install wget 
-RUN wget -O redis.tar.gz &quot;http://download.redis.io/releases/redis-5.0.3.tar.gz&quot; 
-RUN tar -xvf redis.tar.gz
-</code></pre>
-<p><strong>注意：Dockerfile 的指令每执行一次都会在 docker 上新建一层。所以过多无意义的层，会造成镜像膨胀过大。所以上面的写法可以简化为</strong></p>
-<pre><code>FROM centos 
-RUN yum -y install wget \   
-  &amp;&amp; wget -O redis.tar.gz &quot;http://download.redis.io/releases/redis-5.0.3.tar.gz&quot; \   
-  &amp;&amp; tar -xvf redis.tar.gz
-</code></pre>
-<p><strong>开始构建镜像</strong></p>
-<p><strong>在 Dockerfile 文件的存放目录下，执行构建动作。</strong></p>
-<p><strong>命令 docker build -t [镜像名]:[tag名] .</strong></p>
-<p><strong>如果过Dockerfile不在当前目录下，将末尾的‘.’ 换成Dockerfile所在的目录</strong></p>
-<pre><code class="shell">(base) nature@naturedeMacBook-Pro:MyTestProject/MySpringBoot ‹master*›$ docker build -t eureka:2.4.6 .
-[+] Building 6.0s (8/8) FINISHED                                                                                                                                                
-=&gt; [internal] load build definition from Dockerfile                                                                                                                                   0.0s
-=&gt; =&gt; transferring dockerfile: 37B                                                                                                                                                    0.0s
-=&gt; [internal] load .dockerignore                                                                                                                                                      0.0s
-=&gt; =&gt; transferring context: 2B                                                                                                                                                        0.0s
-=&gt; [internal] load metadata for docker.io/library/openjdk:8-jdk-oraclelinux8                                                                                                          2.8s
-=&gt; [auth] library/openjdk:pull token for registry-1.docker.io                                                                                                                         0.0s
-=&gt; [internal] load build context                                                                                                                                                      2.3s
-=&gt; =&gt; transferring context: 46.97MB                                                                                                                                                   2.2s
-=&gt; CACHED [1/2] FROM docker.io/library/openjdk:8-jdk-oraclelinux8@sha256:9d4c9fe13622b123b6b2950395daf45fa0333dee5746a630d4120731601e99ff                                             0.0s
-=&gt; [2/2] COPY target/EurekaService-2.4.6.jar /opt                                                                                                                                     0.4s
-=&gt; exporting to image                                                                                                                                                                 0.5s
-=&gt; =&gt; exporting layers                                                                                                                                                                0.5s
-=&gt; =&gt; writing image sha256:e0bf981ac313fa7005e1dc33ea6670d2bc4e189159aa7b7ac20bb431c6235278                                                                                           0.0s
-=&gt; =&gt; naming to docker.io/library/eureka:2.4.6                                                                                                                                        0.0s
+<h2 id="如何实现"><a href="#如何实现" class="headerlink" title="如何实现"></a>如何实现</h2><ul>
+<li>普通的执行A，之后执行B，是可以满足要求1，对于要求2通常需要设计补偿的操作</li>
+<li>一般边缘的操作，通常会设置成为异步的，以提升性能，比如发送MQ，业务系统负责事务成功后消息发送成功，然后接收系统负责保证通知成功完成</li>
+</ul>
+<h2 id="实现方案"><a href="#实现方案" class="headerlink" title="实现方案"></a>实现方案</h2><h3 id="使用TransactionSynchronizationManager在事务提交之后操作"><a href="#使用TransactionSynchronizationManager在事务提交之后操作" class="headerlink" title="使用TransactionSynchronizationManager在事务提交之后操作"></a>使用TransactionSynchronizationManager在事务提交之后操作</h3><pre><code class="java">@Component
+public class CallBackService &#123;
 
-Use &#39;docker scan&#39; to run Snyk tests against images to find vulnerabilities and learn how to fix them
-(base) nature@naturedeMacBook-Pro:MyTestProject/MySpringBoot ‹master*›$ 
-</code></pre>
+    public void execute(final CallBackAction action) &#123;
 
+        if (TransactionSynchronizationManager.isActualTransactionActive()) &#123;
+            TransactionSynchronizationManager
+                    .registerSynchronization(new TransactionSynchronizationAdapter() &#123;
+                        @Override
+                        public void afterCommit() &#123;
+                            // 事务提交后执行回调
+                            action.callback();
+                        &#125;
+                    &#125;);
+        &#125; else &#123;
+            // 事务提交后执行回调
+            action.callback();
+        &#125;
+
+    &#125;
+
+&#125;
+</code></pre>
+<pre><code class="java">public interface CallBackAction &#123;
+    /**
+     * 普通事务回调
+     */
+    void callback();
+&#125;
+</code></pre>
+<ul>
+<li><p>有了上述两个类，就可以实现在一个事务提交后将消息发送到队列或是其他操作，具体操作如下</p>
+</li>
+<li><p>假设在一个业务下，往数据库插入了一条记录，然后向队列发送一条消息</p>
+<pre><code class="java">@Override
+@Transactional()
+public void save() &#123;
+    User user1 = new User();
+    User user2 = new User();
+    userMapper.insert(user1);
+    userMapper.insert(user2);
+    // 在事务提交后执行
+    callBackService.execute(() -&gt; &#123;
+        // ...
+    &#125;);
+&#125;
+</code></pre>
+</li>
+</ul>
+
+        </div>
+        <div class="content-toc">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%9A%E5%8A%A1%E5%9C%BA%E6%99%AF"><span class="toc-text">业务场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%9A%E5%8A%A1%E8%A6%81%E6%B1%82"><span class="toc-text">业务要求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0"><span class="toc-text">如何实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88"><span class="toc-text">实现方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8TransactionSynchronizationManager%E5%9C%A8%E4%BA%8B%E5%8A%A1%E6%8F%90%E4%BA%A4%E4%B9%8B%E5%90%8E%E6%93%8D%E4%BD%9C"><span class="toc-text">使用TransactionSynchronizationManager在事务提交之后操作</span></a></li></ol></li></ol>
+        </div>
     </div>
     
     <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.css">

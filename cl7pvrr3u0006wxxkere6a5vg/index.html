@@ -140,7 +140,7 @@
             
             <span class="tag">
                 
-                <a href="/tags/Docker/" style="color: #00bcd4">
+                <a href="/tags/Docker/" style="color: #00a596">
                     Docker
                 </a>
             </span>
@@ -149,7 +149,8 @@
         
     </div>
     <div class="content" v-pre>
-        <h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><h2 id="centOS"><a href="#centOS" class="headerlink" title="centOS"></a>centOS</h2><p><strong>使用官方安装脚本自动安装，安装命令如下：</strong></p>
+        <div class="content-content">
+            <h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><h2 id="centOS"><a href="#centOS" class="headerlink" title="centOS"></a>centOS</h2><p><strong>使用官方安装脚本自动安装，安装命令如下：</strong></p>
 <pre><code>curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
 </code></pre>
 <p><strong>其他安装方式：</strong><a target="_blank" rel="noopener" href="https://www.runoob.com/docker/centos-docker-install.html">CentOS Docker 安装 | 菜鸟教程 (runoob.com)</a></p>
@@ -221,7 +222,7 @@ ubuntu            15.10                9b9cb95443b5   5 years ago          137MB
 <p><strong>-t   后面指定镜像名和tag</strong></p>
 <p><strong>EurekaService 是Dockerfile所在的目录，如果Dockerfile在当前目录则使用’.’代替 docker build -t eureka:2.4.6 .</strong></p>
 <pre><code class="shell">(base) nature@naturedeMacBook-Pro:MyTestProject/MySpringBoot ‹master*›$ docker build -t eureka:2.4.6 EurekaService
-[+] Building 6.0s (8/8) FINISHED                                                                                                                                                      
+[+] Building 6.0s (8/8) FINISHED                                                                                                                                                    
  =&gt; [internal] load build definition from Dockerfile                                                                                                                                   0.0s
  =&gt; =&gt; transferring dockerfile: 37B                                                                                                                                                    0.0s
  =&gt; [internal] load .dockerignore                                                                                                                                                      0.0s
@@ -415,6 +416,10 @@ rtt min/avg/max/mdev = 0.077/0.090/0.114/0.014 ms
 [root@1e82da9b5d04 /]# 
 </code></pre>
 
+        </div>
+        <div class="content-toc">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-text">安装</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#centOS"><span class="toc-text">centOS</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%95%9C%E5%83%8F%E4%BD%BF%E7%94%A8"><span class="toc-text">镜像使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E6%9F%A5%E7%9C%8B%E9%95%9C%E5%83%8F"><span class="toc-text">1、查看镜像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E4%BD%BF%E7%94%A8%E9%95%9C%E5%83%8F%E8%BF%90%E8%A1%8C%E5%AE%B9%E5%99%A8"><span class="toc-text">2、使用镜像运行容器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E8%8E%B7%E5%8F%96%E4%B8%80%E4%B8%AA%E6%96%B0%E9%95%9C%E5%83%8F"><span class="toc-text">3、获取一个新镜像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E5%88%A0%E9%99%A4%E9%95%9C%E5%83%8F"><span class="toc-text">4、删除镜像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5%E3%80%81%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F"><span class="toc-text">5、创建镜像</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0%E9%95%9C%E5%83%8F"><span class="toc-text">更新镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E9%95%9C%E5%83%8F"><span class="toc-text">构建镜像</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%B9%E5%99%A8%E6%93%8D%E4%BD%9C"><span class="toc-text">容器操作</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E9%80%9A%E8%BF%87%E9%95%9C%E5%83%8F%E5%90%AF%E5%8A%A8%E5%AE%B9%E5%99%A8"><span class="toc-text">1、通过镜像启动容器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E6%9F%A5%E7%9C%8B%E5%AE%B9%E5%99%A8%E5%88%97%E8%A1%A8"><span class="toc-text">2、查看容器列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E5%90%AF%E5%8A%A8-x2F-%E5%81%9C%E6%AD%A2%E5%B7%B2%E6%9C%89%E7%9A%84%E5%AE%B9%E5%99%A8"><span class="toc-text">3、启动&#x2F;停止已有的容器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4%E3%80%81%E8%BF%9B%E5%85%A5-x2F-%E9%80%80%E5%87%BA%E5%AE%B9%E5%99%A8"><span class="toc-text">4、进入&#x2F;退出容器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5%E3%80%81%E5%88%A0%E9%99%A4%E5%AE%B9%E5%99%A8"><span class="toc-text">5、删除容器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6%E3%80%81%E5%AF%BC%E5%85%A5-x2F-%E5%AF%BC%E5%87%BA%E5%AE%B9%E5%99%A8"><span class="toc-text">6、导入&#x2F;导出容器</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%B9%E5%99%A8%E8%BF%9E%E6%8E%A5"><span class="toc-text">容器连接</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E5%AE%B9%E5%99%A8%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84"><span class="toc-text">1、容器端口映射</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84%E6%9F%A5%E7%9C%8B"><span class="toc-text">2、端口映射查看</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E5%AE%B9%E5%99%A8%E4%BA%92%E8%81%94"><span class="toc-text">3、容器互联</span></a></li></ol></li></ol>
+        </div>
     </div>
     
     <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.css">

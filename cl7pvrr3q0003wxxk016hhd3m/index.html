@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
-        <title>OkHttp3使用证书发起请求 | NatureRan</title>
+        <title>02、Dockerfile的使用 | NatureRan</title>
         <meta name="author" content="Nature">
         <meta name="description" content="">
         <meta name="keywords" content="java">
@@ -122,7 +122,7 @@
                         
 <div class="article">
     <div>
-        <h1>OkHttp3使用证书发起请求 </h1>
+        <h1>02、Dockerfile的使用 </h1>
     </div>
     <div class="info">
         <span class="date">
@@ -130,15 +130,6 @@
                 <svg class="fa-icon"><use xlink:href="#calendar-solid"></use></svg>
             </span>
             2022/9/2
-        </span>
-        
-        <span class="category">
-            <a href="/categories/工作记录/">
-                <span class="icon">
-                    <svg class="fa-icon"><use xlink:href="#bookmark-solid"></use></svg>
-                </span>
-                工作记录
-            </a>
         </span>
         
         
@@ -149,22 +140,8 @@
             
             <span class="tag">
                 
-                <a href="/tags/Java/" style="color: #00bcd4">
-                    Java
-                </a>
-            </span>
-            
-            <span class="tag">
-                
-                <a href="/tags/OkHttp3/" style="color: #03a9f4">
-                    OkHttp3
-                </a>
-            </span>
-            
-            <span class="tag">
-                
-                <a href="/tags/WeChat/" style="color: #03a9f4">
-                    WeChat
+                <a href="/tags/Docker/" style="color: #00bcd4">
+                    Docker
                 </a>
             </span>
             
@@ -172,120 +149,70 @@
         
     </div>
     <div class="content" v-pre>
-        <blockquote>
-<p>最近在对接微信支付功能，微信所有接口都采用okHttp3请求，但是申请退款接口需要证书才能调用，那如何使用证书发起请求以及证书如何获取，先看一下微信开发文档</p>
-</blockquote>
+        <div class="content-content">
+            <h1 id="Dockerfile常用命令"><a href="#Dockerfile常用命令" class="headerlink" title="Dockerfile常用命令"></a>Dockerfile常用命令</h1><h2 id="FROM"><a href="#FROM" class="headerlink" title="FROM"></a>FROM</h2><p><strong>当前镜像基于哪个镜像生成</strong></p>
+<p><strong>例如：基于openjdk8创建一个新镜像</strong></p>
+<pre><code>FROM openjdk:8-jdk-oraclelinux8
+</code></pre>
 <span id="more"></span>
 
-<ol>
-<li>在微信支付接口中，涉及资金回滚的接口会使用到API证书，包括退款、撤销接口。商家在申请微信支付成功后，收到的相应邮件后，可以按照指引下载API证书，也可以按照以下路径下载：微信商户平台(pay.weixin.qq.com)–&gt;账户中心–&gt;账户设置–&gt;API安全 。证书文件说明如下：</li>
-</ol>
-<table>
-<thead>
-<tr>
-<th>证书附件</th>
-<th>描述</th>
-<th>使用场景</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>pkcs12格式(apiclient_cert.p12、</td>
-<td>包含了私钥信息的证书文件，为p12(pfx)格式，由微信支付签发给您用来标识和界定您的身份</td>
-<td>撤销、退款申请API中调用</td>
-<td>windows上可以直接双击导入系统，导入过程中会提示输入证书密码，证书密码默认为您的商户ID（如：10010000）</td>
-</tr>
-</tbody></table>
-<ul>
-<li>以下两个证书在PHP环境中使用：</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>证书附件</th>
-<th>描述</th>
-<th>使用场景</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>证书pem格式（apiclient_cert.pem）</td>
-<td>从apiclient_cert.p12中导出证书部分的文件，为pem格式，请妥善保管不要泄漏和被他人复制</td>
-<td>PHP等不能直接使用p12文件，而需要使用pem，为了方便您使用，已为您直接提供</td>
-<td>您也可以使用openssl命令来自己导出：openssl pkcs12 -clcerts -nokeys -in apiclient_cert.p12 -out apiclient_cert.pem）</td>
-</tr>
-<tr>
-<td>证书密钥pem格式（apiclient_key.pem）</td>
-<td>从apiclient_key.pem中导出密钥部分的文件，为pem格式，请妥善保管不要泄漏和被他人复制</td>
-<td>PHP等不能直接使用p12文件，而需要使用pem，为了方便您使用，已为您直接提供</td>
-<td>您也可以使用openssl命令来自己导出：openssl pkcs12 -nocerts -in apiclient_cert.p12 -out apiclient_key.pem</td>
-</tr>
-</tbody></table>
-<ol start="2">
-<li>使用API证书<ul>
-<li>apiclient_cert.p12是商户证书文件，除PHP外的开发均使用此证书文件。</li>
-<li>商户如果使用.NET环境开发，请确认Framework版本大于2.0，必须在操作系统上双击安装证书apiclient_cert.p12后才能被正常调用。</li>
-<li>API证书调用或安装需要使用到密码，该密码的值为微信商户号（mch_id）</li>
-</ul>
-</li>
-<li>API证书安全<ul>
-<li>证书文件不能放在web服务器虚拟目录，应放在有访问权限控制的目录中，防止被他人下载；</li>
-<li>建议将证书文件名改为复杂且不容易猜测的文件名；</li>
-<li>商户服务器要做好病毒和木马防护工作，不被非法侵入者窃取证书文件。</li>
-</ul>
-</li>
-<li>商户回调API安全<ul>
-<li>在普通的网络环境下，HTTP请求存在DNS劫持、运营商插入广告、数据被窃取，正常数据被修改等安全风险。商户回调接口使用HTTPS协议可以保证数据传输的安全性。所以微信支付建议商户提供给微信支付的各种回调采用HTTPS协议。</li>
-</ul>
-</li>
-</ol>
-<blockquote>
-<p>以上就是微信对于API证书的说明，从微信商户平台上可以下载对应的证书，每个商户id都会对应一个证书，发起请求的时候需要使用对应的证书才可以</p>
-</blockquote>
-<ul>
-<li><p>我们把证书文件 ***.p12文件发在 resource&#x2F;assets 目录下，创建带证书的OkHttpClient方法如下：</p>
-<pre><code class="java">SSLContext sslContext = getSSLContextByAppKey(appKey);
-if (sslContext == null) &#123;
-    restLogger.info(&quot;获取证书失败&quot;);
-    return null;
-&#125;
-OkHttpClient client = new OkHttpClient().newBuilder().sslSocketFactory(sslContext.getSocketFactory()).build();
+<h2 id="COPY"><a href="#COPY" class="headerlink" title="COPY"></a>COPY</h2><p><strong>拷贝，将Dockerfile上下文的一些文件拷贝到容器的指定路径中</strong></p>
+<p><strong>例如：将jar包拷贝到容器&#x2F;opt 目录下</strong></p>
+<pre><code>COPY target/EurekaService-2.4.6.jar /opt
 </code></pre>
-</li>
-<li><p>获取SSLContext的方法如下：</p>
-<pre><code class="java">private SSLContext getSSLContextByAppKey(String mchId) &#123;
-    // 设置证书路径
-    String certPath = String.format(&quot;assets/%s.p12&quot;, mchId);
-    // 设置证书密码
-    String certPass = mchId;
-    // 获取证书
-    return getSSLContext(certPath, certPass);
-&#125;
-private SSLContext getSSLContext(String certPath, String certPass) &#123;
-    try &#123;
-        KeyStore clientStore = KeyStore.getInstance(&quot;PKCS12&quot;);
-        // 读取resource下的文件 支持jar方式启动
-        Resource resource = new ClassPathResource(certPath);
-        InputStream inputStream = resource.getInputStream();
-        char[] passArray = certPass.toCharArray();
-        clientStore.load(inputStream, passArray);
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        kmf.init(clientStore, passArray);
-        KeyManager[] kms = kmf.getKeyManagers();
-        SSLContext sslContext = SSLContext.getInstance(&quot;TLSv1&quot;);
-        sslContext.init(kms, null, new SecureRandom());
-        return sslContext;
-    &#125; catch (Exception e) &#123;
-        restLogger.info(&quot;设置证书出错&quot;);
-    &#125;
-    return null;
-&#125;
+<h2 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h2><p><strong>仅仅只是声明端口。</strong></p>
+<p><strong>作用：</strong></p>
+<p><strong>帮助镜像使用者理解这个镜像服务的守护端口，以方便配置映射。</strong></p>
+<p><strong>在运行时使用随机端口映射时，也就是 docker run -P 时，会自动随机映射 EXPOSE 的端口。</strong></p>
+<p><strong>例如：EurekaService的端口是8761</strong></p>
+<pre><code>EXPOSE 8761
 </code></pre>
-</li>
-<li><p>按上述方式获取到的OkHttpClient就就能带着证书发起https请求了</p>
-</li>
-</ul>
+<h2 id="CMD"><a href="#CMD" class="headerlink" title="CMD"></a>CMD</h2><p><strong>用于运行主要程序</strong></p>
+<p><strong>例如：运行镜像时需要启动EurekaService</strong></p>
+<pre><code>CMD java -jar -Xms128M -Xmx256m /opt/EurekaService-2.4.6.jar
+</code></pre>
+<p><strong>RUN</strong></p>
+<p><strong>用于执行后面跟着的命令行命令</strong></p>
+<pre><code>FROM centos 
+RUN yum -y install wget 
+RUN wget -O redis.tar.gz &quot;http://download.redis.io/releases/redis-5.0.3.tar.gz&quot; 
+RUN tar -xvf redis.tar.gz
+</code></pre>
+<p><strong>注意：Dockerfile 的指令每执行一次都会在 docker 上新建一层。所以过多无意义的层，会造成镜像膨胀过大。所以上面的写法可以简化为</strong></p>
+<pre><code>FROM centos 
+RUN yum -y install wget \   
+  &amp;&amp; wget -O redis.tar.gz &quot;http://download.redis.io/releases/redis-5.0.3.tar.gz&quot; \   
+  &amp;&amp; tar -xvf redis.tar.gz
+</code></pre>
+<p><strong>开始构建镜像</strong></p>
+<p><strong>在 Dockerfile 文件的存放目录下，执行构建动作。</strong></p>
+<p><strong>命令 docker build -t [镜像名]:[tag名] .</strong></p>
+<p><strong>如果过Dockerfile不在当前目录下，将末尾的‘.’ 换成Dockerfile所在的目录</strong></p>
+<pre><code class="shell">(base) nature@naturedeMacBook-Pro:MyTestProject/MySpringBoot ‹master*›$ docker build -t eureka:2.4.6 .
+[+] Building 6.0s (8/8) FINISHED                                                                                                                                            
+=&gt; [internal] load build definition from Dockerfile                                                                                                                                   0.0s
+=&gt; =&gt; transferring dockerfile: 37B                                                                                                                                                    0.0s
+=&gt; [internal] load .dockerignore                                                                                                                                                      0.0s
+=&gt; =&gt; transferring context: 2B                                                                                                                                                        0.0s
+=&gt; [internal] load metadata for docker.io/library/openjdk:8-jdk-oraclelinux8                                                                                                          2.8s
+=&gt; [auth] library/openjdk:pull token for registry-1.docker.io                                                                                                                         0.0s
+=&gt; [internal] load build context                                                                                                                                                      2.3s
+=&gt; =&gt; transferring context: 46.97MB                                                                                                                                                   2.2s
+=&gt; CACHED [1/2] FROM docker.io/library/openjdk:8-jdk-oraclelinux8@sha256:9d4c9fe13622b123b6b2950395daf45fa0333dee5746a630d4120731601e99ff                                             0.0s
+=&gt; [2/2] COPY target/EurekaService-2.4.6.jar /opt                                                                                                                                     0.4s
+=&gt; exporting to image                                                                                                                                                                 0.5s
+=&gt; =&gt; exporting layers                                                                                                                                                                0.5s
+=&gt; =&gt; writing image sha256:e0bf981ac313fa7005e1dc33ea6670d2bc4e189159aa7b7ac20bb431c6235278                                                                                           0.0s
+=&gt; =&gt; naming to docker.io/library/eureka:2.4.6                                                                                                                                        0.0s
 
+Use &#39;docker scan&#39; to run Snyk tests against images to find vulnerabilities and learn how to fix them
+(base) nature@naturedeMacBook-Pro:MyTestProject/MySpringBoot ‹master*›$ 
+</code></pre>
+
+        </div>
+        <div class="content-toc">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Dockerfile%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-text">Dockerfile常用命令</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#FROM"><span class="toc-text">FROM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#COPY"><span class="toc-text">COPY</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EXPOSE"><span class="toc-text">EXPOSE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CMD"><span class="toc-text">CMD</span></a></li></ol></li></ol>
+        </div>
     </div>
     
     <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.css">
