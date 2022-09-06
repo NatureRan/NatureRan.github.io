@@ -176,7 +176,7 @@
         
         <span class="tag">
             
-            <a href="/tags/Docker/" style="color: #00a596">
+            <a href="/tags/Docker/" style="color: #ff7d73">
                 Docker
             </a>
         </span>
@@ -217,7 +217,7 @@
         
         <span class="tag">
             
-            <a href="/tags/Docker/" style="color: #ff7d73">
+            <a href="/tags/Docker/" style="color: #ffa2c4">
                 Docker
             </a>
         </span>
@@ -358,21 +358,21 @@
         
         <span class="tag">
             
-            <a href="/tags/Java/" style="color: #ffa2c4">
+            <a href="/tags/Java/" style="color: #03a9f4">
                 Java
             </a>
         </span>
         
         <span class="tag">
             
-            <a href="/tags/OkHttp3/" style="color: #00bcd4">
+            <a href="/tags/OkHttp3/" style="color: #03a9f4">
                 OkHttp3
             </a>
         </span>
         
         <span class="tag">
             
-            <a href="/tags/WeChat/" style="color: #03a9f4">
+            <a href="/tags/WeChat/" style="color: #ffa2c4">
                 WeChat
             </a>
         </span>
@@ -430,7 +430,7 @@
         
         <span class="tag">
             
-            <a href="/tags/Java/" style="color: #03a9f4">
+            <a href="/tags/Java/" style="color: #ffa2c4">
                 Java
             </a>
         </span>
@@ -464,9 +464,7 @@
     <div class="excerpt">
         <div class="content" v-pre>
             
-            <!-- ![img](../images/红黑树/kangna01.jpg) -->
-
-<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><ol>
+            <h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><ol>
 <li>根节点是【黑色】</li>
 <li>每个节点要么是【黑色】要么是【红色】</li>
 <li>每个【红色】节点的两个子节点一定都是【黑色】</li>
@@ -474,341 +472,6 @@
 <li>任意一个节点的路径到叶子节点所包含的【黑色】节点的数量是相同的—这个也称之为【黑色完美平衡】</li>
 <li>新插入的节点必须是【红色】-&gt; 如果插入节点是黑色，会直接破坏第5点</li>
 </ol>
-<p>红黑树的最大高度是 2logn，这看起来查找的效率并不是 AVL 树要好，红黑树的的添加和删除元素的时间复杂度是O(logn)，因为他不会退化成想二叉搜索树的链表的结构</p>
-<h1 id="与AVL树的比较"><a href="#与AVL树的比较" class="headerlink" title="与AVL树的比较"></a>与AVL树的比较</h1><ol>
-<li>AVL树的时间复杂度优于红黑树，但是对于现在的计算机，这种差别可以忽略</li>
-<li>红黑树的插入删除比AVL树更便于控制操作。</li>
-<li>红黑树整体性能略优于AVL树。（红黑树旋转情况少于AVL树）。这点是非常重要的</li>
-<li>如果是在查询很多增删少的情况下 AVL 树还是优于红黑树的，如果增删比较频繁，那红黑树绝对是完美的一种选择</li>
-</ol>
-<p><img src="/../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E7%BA%A2%E9%BB%91%E6%A0%9101.jpg" alt="红黑树形状"></p>
-<h1 id="构建流程"><a href="#构建流程" class="headerlink" title="构建流程"></a>构建流程</h1><ol>
-<li>当前红黑树为空树<ul>
-<li>插入节点位于根节点，直接将当前节点变成黑色</li>
-</ul>
-</li>
-<li>插入节点已存在于树中<ul>
-<li>替换节点值</li>
-</ul>
-</li>
-<li>插入节点的父节点是黑色<ul>
-<li>不做任何操作</li>
-</ul>
-</li>
-<li>插入父节点是红色（父节点是红色意味着父节点一定还有父节点，因为根节点是黑色的）<ol>
-<li>叔叔节点存在且是红色<ul>
-<li><img src="/../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E5%8F%98%E8%89%B2%E6%83%85%E5%86%B5%E5%89%8D.jpg" alt="img"> </li>
-<li>将P，U变成黑色，PP变成红色（由于PP变成了红色可能会影响上面的节点，所以需要从PP节点向上递归处理）</li>
-<li><img src="/../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E5%8F%98%E8%89%B2%E6%83%85%E5%86%B5%E5%90%8E.jpg" alt="img"></li>
-</ul>
-</li>
-<li>叔叔节点不存在或是黑色（旋转后主要节点是黑色，不会对上层树形状造成破坏，所以这种情况不需要向上递归）<ol>
-<li>LL形状<ul>
-<li><img src="/../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E6%97%8B%E8%BD%ACLL.jpg" alt="img"></li>
-</ul>
-</li>
-<li>LR形状<ul>
-<li><img src="/../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E6%97%8B%E8%BD%ACLR.jpg" alt="img"></li>
-</ul>
-</li>
-<li>RR形状<ul>
-<li><img src="/../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E6%97%8B%E8%BD%ACRR.jpg" alt="img"></li>
-</ul>
-</li>
-<li>RL形状<ul>
-<li><img src="/../images/%E7%BA%A2%E9%BB%91%E6%A0%91/%E6%97%8B%E8%BD%ACRL.jpg" alt="img"></li>
-</ul>
-</li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-<pre><code class="java">public class RBMap &#123;
-
-    private Node root = null;
-
-    private int minDepth = Integer.MAX_VALUE;
-
-    private int maxDepth = 0;
-
-    private int maxBlackCnt = 0;
-
-    public void put(Integer value) &#123;
-        Node node = new Node(value);
-        // 从根节点向下查找到合适的位置并添加
-        setValue2Tree(node, root);
-        // 平衡
-        balanceTree(node);
-    &#125;
-
-    public boolean exist(Integer value) &#123;
-        return findValueInTree(value, root);
-    &#125;
-
-    public void printTree() &#123;
-        printNode(root);
-    &#125;
-
-    public int getDepthDiffer() &#123;
-        getDepth(root, 0);
-        return maxDepth = minDepth;
-    &#125;
-
-    /**
-     * 红黑树形状检测
-     * @return
-     */
-    public boolean checkRBStruct() &#123;
-        if (root.red) &#123;
-            return false;
-        &#125;
-        // 检测是否存在相连的红色节点
-        boolean redNotLink = checkRedNotLink(root);
-        // 计算每个路径上的黑色节点数量是否相同
-        maxBlackCnt = 0;
-        boolean checkBlackCnt = checkBlackCnt(root, 0);
-        return redNotLink &amp;&amp; checkBlackCnt;
-    &#125;
-
-    /**
-     * 先将节点加入树
-     * @param node
-     * @param father
-     */
-    private void setValue2Tree(Node node, Node father) &#123;
-        if (father == null) &#123;
-            root = node;
-            return;
-        &#125;
-        if (node.value &lt; father.value) &#123;
-            if (father.left == null) &#123;
-                father.left = node;
-                node.father = father;
-            &#125; else &#123;
-                setValue2Tree(node, father.left);
-            &#125;
-        &#125; else if (node.value &gt; father.value) &#123;
-            if (father.right == null) &#123;
-                father.right = node;
-                node.father = father;
-            &#125; else &#123;
-                setValue2Tree(node, father.right);
-            &#125;
-        &#125; else &#123;
-            // 更新节点值即可，当前情况不需要其他操作
-
-        &#125;
-    &#125;
-
-    /**
-     * 平衡这棵树
-     */
-    private void balanceTree(Node node) &#123;
-        if (node.father == null) &#123;
-            // node是根节点，直接变成黑色
-            node.red = false;
-        &#125;
-        // node的father是黑色的，不需要调整
-        Node father = node.father;
-        if (father != null &amp;&amp; !father.red) &#123;
-            return;
-        &#125;
-        // node的father是红色
-        if (father != null &amp;&amp; father.red) &#123;
-            // father肯定还有father，找到grandFather
-            Node grandFather = father.father;
-            Node uncle = father == grandFather.left ? grandFather.right : grandFather.left;
-            // 找到grandFather是否还有另一个儿子，即是否有uncle
-            if (uncle != null &amp;&amp; uncle.red) &#123;
-                // uncle是红色的，现将father和uncle变成黑色，grandFather变成红色
-                father.red = false;
-                uncle.red = false;
-                grandFather.red = true;
-                // 由于grandFather变成红色了，可以理解为此时grandFather也是新加入树的一个叶子节点，从这个节点再次平衡
-                balanceTree(grandFather);
-            &#125; else &#123;
-                // 没有uncle，或者uncle是黑色
-                Node brother = node == father.left ? father.right : father.left;
-                if (father == grandFather.left &amp;&amp; node == father.left) &#123;
-                    // LL 情况，先变色，再旋转
-                    processLL(father, grandFather, brother);
-                &#125; else if (father == grandFather.left &amp;&amp; node == father.right) &#123;
-                    // LR 情况，将node和father交换变成LL
-                    processLR(node, father, grandFather);
-                &#125; else if (father == grandFather.right &amp;&amp; node == father.right) &#123;
-                    // RR 情况，和LL对称
-                    processRR(father, grandFather, brother);
-                &#125; else if (father == grandFather.right &amp;&amp; node == father.left) &#123;
-                    // RL 情况，和LR对称
-                    processRL(node, father, grandFather);
-                &#125;
-                // 旋转后更新root
-                if (root == grandFather &amp;&amp; grandFather.father != null) &#123;
-                    root = grandFather.father;
-                &#125;
-            &#125;
-        &#125;
-    &#125;
-
-    private void processLL(Node father, Node grandFather, Node brother) &#123;
-        father.red = false;
-        grandFather.red = true;
-        father.father = grandFather.father;
-        if (grandFather.father != null) &#123;
-            if (grandFather.father.left == grandFather) &#123;
-                grandFather.father.left = father;
-            &#125; else &#123;
-                grandFather.father.right = father;
-            &#125;
-        &#125;
-        father.right = grandFather;
-        grandFather.father = father;
-        grandFather.left = brother;
-        if (brother != null) &#123;
-            brother.father = grandFather;
-        &#125;
-    &#125;
-
-    private void processRR(Node father, Node grandFather, Node brother) &#123;
-        father.red = false;
-        grandFather.red = true;
-        father.father = grandFather.father;
-        if (grandFather.father != null) &#123;
-            if (grandFather.father.left == grandFather) &#123;
-                grandFather.father.left = father;
-            &#125; else &#123;
-                grandFather.father.right = father;
-            &#125;
-        &#125;
-        father.left = grandFather;
-        grandFather.father = father;
-        grandFather.right = brother;
-        if (brother != null) &#123;
-            brother.father = grandFather;
-        &#125;
-    &#125;
-
-    private void processLR(Node node, Node father, Node grandFather) &#123;
-        grandFather.left = node;
-        node.father = grandFather;
-        father.right = node.left;
-        if (father.right != null) &#123;
-            father.right.father = father;
-        &#125;
-        node.left = father;
-        father.father = node;
-        processLL(node, grandFather, node.right);
-    &#125;
-
-    private void processRL(Node node, Node father, Node grandFather) &#123;
-        grandFather.right = node;
-        node.father = grandFather;
-        father.left = node.right;
-        if (father.left != null) &#123;
-            father.left.father = father;
-        &#125;
-        node.right = father;
-        father.father = node;
-        processRR(node, grandFather, node.left);
-    &#125;
-
-    private boolean findValueInTree(int value, Node node) &#123;
-        if (node == null) &#123;
-            return false;
-        &#125;
-        if (value == node.value) &#123;
-            return true;
-        &#125;
-        if (value &lt; node.value) &#123;
-            return findValueInTree(value, node.left);
-        &#125; else &#123;
-            return findValueInTree(value, node.right);
-        &#125;
-    &#125;
-
-    private void printNode(Node node) &#123;
-        if (node == null) &#123;
-            return;
-        &#125;
-        String left = node.left != null ? node.left.value + &quot;&quot; : &quot;null&quot;;
-        String right = node.right != null ? node.right.value + &quot;&quot; : &quot;null&quot;;
-        String father = node.father != null ? node.father.value + &quot;&quot; : &quot;null&quot;;
-        System.out.println(&quot;(&quot; + node.value + &quot; &quot; + (node.red ? &quot;R&quot; : &quot;B&quot;) + &quot; &quot; + left + &quot; &quot; + right + &quot; | &quot; + father + &quot;)&quot;);
-        printNode(node.left);
-        printNode(node.right);
-    &#125;
-
-    private void getDepth(Node node, int depth) &#123;
-        if (node == null) &#123;
-            if (depth &lt; minDepth) &#123;
-                minDepth = depth;
-            &#125;
-            if (depth &gt; maxDepth) &#123;
-                maxDepth = depth;
-            &#125;
-            return;
-        &#125;
-        getDepth(node.left, depth + 1);
-        getDepth(node.right, depth + 1);
-    &#125;
-
-    private boolean checkRedNotLink(Node node) &#123;
-        if (node.left != null &amp;&amp; node.right != null) &#123;
-            if (node.red &amp;&amp; node.left.red || node.red &amp;&amp; node.right.red) &#123;
-                return false;
-            &#125; else &#123;
-                return checkRedNotLink(node.left) &amp;&amp; checkRedNotLink(node.right);
-            &#125;
-        &#125; else if (node.left != null) &#123;
-            if (node.red &amp;&amp; node.left.red) &#123;
-                return false;
-            &#125; else &#123;
-                return checkRedNotLink(node.left);
-            &#125;
-        &#125; else if (node.right != null) &#123;
-            if (node.red &amp;&amp; node.right.red) &#123;
-                return false;
-            &#125; else &#123;
-                return checkRedNotLink(node.right);
-            &#125;
-        &#125;
-        return true;
-    &#125;
-
-    private boolean checkBlackCnt(Node node, int currentCnt) &#123;
-        if (!node.red) &#123;
-            currentCnt ++;
-        &#125;
-        if (node.left == null &amp;&amp; node.right == null) &#123;
-            if (maxBlackCnt &lt;= 0) &#123;
-                maxBlackCnt = currentCnt;
-                return true;
-            &#125; else if (currentCnt != maxBlackCnt) &#123;
-                return false;
-            &#125;
-        &#125; else if (node.left != null) &#123;
-            return checkBlackCnt(node.left, currentCnt);
-        &#125; else &#123;
-            return checkBlackCnt(node.right, currentCnt);
-        &#125;
-        return true;
-    &#125;
-
-    private static class Node &#123;
-        public boolean red = true;
-        public Integer value;
-        public Node left;
-        public Node right;
-        public Node father;
-
-        public Node(Integer value) &#123;
-            this.value = value;
-        &#125;
-    &#125;
-&#125;
-</code></pre>
-
             
         </div>
     </div>
@@ -821,7 +484,7 @@
         
         <span class="tag">
             
-            <a href="/tags/Java/" style="color: #00a596">
+            <a href="/tags/Java/" style="color: #ffa2c4">
                 Java
             </a>
         </span>
