@@ -1,0 +1,387 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+        <title>OGNL表达式引擎 | NatureRan</title>
+        <meta name="author" content="Nature">
+        <meta name="description" content="">
+        <meta name="keywords" content="java">
+        <link rel="icon" href="https://raw.githubusercontent.com/NatureRan/Images/main/benghuai11-headImg.jpg">
+        <script src="https://cdn.staticfile.org/instant.page/5.1.0/instantpage.min.js" type="module"></script>
+        <script src="https://cdn.staticfile.org/font-awesome/6.1.1/js/all.min.js"></script>
+        
+        <link rel="stylesheet" href="/css/fonts.min.css">
+        <link rel="stylesheet" href="/css/particlex.css">
+        
+        <script src="https://cdn.staticfile.org/vue/3.2.33/vue.global.prod.min.js"></script>
+    <meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div id="loading" style="height:100vh;width:100vw;position:fixed;display:flex;z-index:200;justify-content:space-between;background:#fff;transition:opacity 0.3s ease-out"><div style="position:fixed;height:100vh;width:100vw;display:flex;justify-content:center;align-items:center"><div id="loadcontent" style="width:50vmin;height:50vmin;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px #a3ddfb;text-align:center"><div><h2>LOADING...</h2><p style="word-break:keep-all">加载过慢请开启缓存(浏览器默认开启)</p><div><img alt="loading" src="/loading.gif"></div></div></div></div></div>
+        <div id="layout">
+            <i data-fa-symbol="calendar-solid" class="fa-solid fa-calendar fa-fw"></i>
+            <i data-fa-symbol="bookmark-solid" class="fa-solid fa-bookmark fa-fw"></i>
+            <i data-fa-symbol="tags-solid" class="fa-solid fa-tags fa-fw"></i>
+            <transition name="into">
+                <div v-show="show_page" style="display: -not-none">
+                    <div id="menu_show">
+                         
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">NatureRan</span>
+        </a>
+        
+        <a href="/">
+            <i class="fa-solid fa-house fa-fw"></i>
+            <span>&ensp;home</span>
+        </a>
+        
+        <a href="/about">
+            <i class="fa-solid fa-id-card fa-fw"></i>
+            <span>&ensp;about</span>
+        </a>
+        
+        <a href="/archives">
+            <i class="fa-solid fa-box-archive fa-fw"></i>
+            <span>&ensp;archives</span>
+        </a>
+        
+        <a href="/categories">
+            <i class="fa-solid fa-bookmark fa-fw"></i>
+            <span>&ensp;categories</span>
+        </a>
+        
+        <a href="/tags">
+            <i class="fa-solid fa-tags fa-fw"></i>
+            <span>&ensp;tags</span>
+        </a>
+        
+    </div>
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div class="curtain" @click="menu_show = !menu_show" v-show="menu_show"></div>
+        <div :class="'title'" @click="menu_show = !menu_show">
+            <i class="fa-solid fa-bars fa-fw"></i>
+            <span>&emsp;NatureRan</span>
+        </div>
+        <transition name="slide">
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-house fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">home</div>
+                </div>
+            </a>
+            
+            <a href="/about">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-id-card fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">about</div>
+                </div>
+            </a>
+            
+            <a href="/archives">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-box-archive fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">archives</div>
+                </div>
+            </a>
+            
+            <a href="/categories">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-bookmark fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">categories</div>
+                </div>
+            </a>
+            
+            <a href="/tags">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-tags fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">tags</div>
+                </div>
+            </a>
+            
+        </div>
+        </transition>
+    </div>
+</nav>
+                    </div>
+                    <div id="main">
+                        
+<div class="article">
+    <div>
+        <h1>OGNL表达式引擎 </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <svg class="fa-icon"><use xlink:href="#calendar-solid"></use></svg>
+            </span>
+            2022/11/30
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <svg class="fa-icon"><use xlink:href="#tags-solid"></use></svg>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/Java/" style="color: #00bcd4">
+                    Java
+                </a>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/OGNL/" style="color: #ffa2c4">
+                    OGNL
+                </a>
+            </span>
+            
+        </span>
+        
+    </div>
+    <div class="content" v-pre>
+        <div class="content-content">
+            <h2 id="强大的OGNL"><a href="#强大的OGNL" class="headerlink" title="强大的OGNL"></a>强大的OGNL</h2><p>OGNL (Object Graph Navigation Language)  是一个开源的表达式引擎。通过使用OGNL，我们能够通过表达式存取Java对象树中的任意属性和调用Java对象树的方法等。也就是说，如果我们把表达式看成是一个带有语义的字符串，那么OGNL就是这个语义字符串与Java对象之间沟通的催化剂，通过OGNL，我们可以轻松解决在数据流转的过程中所碰到的各种问题。</p>
+<span id="more"></span>
+
+<h2 id="深入OGNL的API"><a href="#深入OGNL的API" class="headerlink" title="深入OGNL的API"></a>深入OGNL的API</h2><p>我们首先用最直观的方式：通过研究OGNL的原生API来看看如何使用OGNL来进行对象的存取操作。首先来看一下来自于OGNL的静态方法</p>
+<pre><code class="JAVA">/**  
+ * 通过传入的OGNL表达式，在给定的上下文环境中，从root对象里取值 
+ */
+public static Object getValue(String expression, Map context, Object root) throws OgnlException &#123;  
+  return getValue(expression, context, root, null);  
+&#125;
+  
+/** 
+ * 通过传入的OGNL表达式，在给定的上下文环境中，往root对象里写值 
+ */
+public static void setValue(String expression, Map context, Object root, Object value) throws OgnlException &#123;
+  setValue(parseExpression(expression), context, root, value);  
+&#125;
+</code></pre>
+<p>OGNL的API其实相当简单，上面的2个方法，分别针对对象的“取值”和“写值”操作。因而，OGNL的基本操作实际上是通过传入上述这2个方法的三个参数来实现的。OGNL同时编写了许多其他的方法来实现相同的功能，上述的2个接口只是其中最简单并最具代表性的2个方法。读者可以通过阅读Ognl.java来获取更多的信息。</p>
+<p>在初步浏览了OGNL的API后，我们可以编写一个单元测试来测试一下上面列出来的OGNL静态方法接口，实现如代码如下</p>
+<pre><code class="JAVA">@RunWith(SpringRunner.class)
+@SpringBootTest
+public class OgnlTest &#123;
+
+    @Test
+    public void testGetValue() throws OgnlException &#123;
+        // 创建Root对象
+        User user = new User();
+        user.setId(1L);
+        user.setName(&quot;NatureRan&quot;);
+
+        // 创建上下文环境
+        Map context = new HashMap();
+        context.put(&quot;introduction&quot;,&quot;My name is &quot;);
+
+        // 测试从Root对象中进行表达式计算并获取结果
+        Object name = Ognl.getValue(Ognl.parseExpression(&quot;name&quot;), user);
+        Assert.assertEquals(&quot;NatureRan&quot;, name);
+
+        // 测试从上下文环境中进行表达式计算并获取结果
+        Object contextValue = Ognl.getValue(Ognl.parseExpression(&quot;#introduction&quot;), context, user);
+        Assert.assertEquals(&quot;My name is &quot;, contextValue);
+
+        // 测试同时从将Root对象和上下文环境作为表达式的一部分进行计算
+        Object hello = Ognl.getValue(Ognl.parseExpression(&quot;#introduction + name&quot;), context, user);
+        Assert.assertEquals(&quot;My name is NatureRan&quot;, hello);
+    &#125;
+
+    @Test
+    public void testSetValue() throws Exception &#123;
+        // 创建Root对象
+        User user = new User();
+        user.setName(&quot;NatureRan&quot;);
+
+        Assert.assertEquals(&quot;NatureRan&quot;, user.getName());
+        // 对Root对象进行写值操作
+        Ognl.setValue(&quot;name&quot;, user, &quot;nature608&quot;);
+        // 校验写入后的字段值
+        Assert.assertEquals(&quot;nature608&quot;, user.getName());
+    &#125;
+&#125;
+</code></pre>
+<p>通过简单的API就能够完成对各种对象树的“取值”和“写值”操作。而“取值”和“写值”工作是我们日后所有工作的基础，如果我们要深入了解OGNL的细节，就需要对传入OGNL的这3个参数进行研究。这3个参数，被我们称之为OGNL的三要素</p>
+<h2 id="OGNL三要素"><a href="#OGNL三要素" class="headerlink" title="OGNL三要素"></a>OGNL三要素</h2><h3 id="表达式（Expression）"><a href="#表达式（Expression）" class="headerlink" title="表达式（Expression）"></a>表达式（Expression）</h3><p>表达式是整个OGNL的核心，所有的OGNL操作都是针对表达式的解析后进行的。表达式会规定此次OGNL操作到底要干什么。因此，表达式其实是一个带有语法含义的字符串，这个字符串将规定操作的类型和操作的内容。</p>
+<p>OGNL支持大量的表达式语法，不仅支持“链式”描述对象访问路径，还支持在表达式中进行简单的计算，甚至还能够支持复杂的Lambda表达式等。我们可以在接下来的章节中看到各种各样不同的OGNL表达式。</p>
+<h3 id="Root对象（Root-Object）"><a href="#Root对象（Root-Object）" class="headerlink" title="Root对象（Root Object）"></a>Root对象（Root Object）</h3><p>OGNL的Root对象可以理解为OGNL的操作对象。当OGNL表达式规定了“干什么”以后，我们还需要指定对谁干。OGNL的Root对象实际上是一个Java对象，是所有OGNL操作的实际载体。这就意味着，如果我们有一个OGNL的表达式，那么我们实际上需要针对Root对象去进行OGNL表达式的计算并返回结果。</p>
+<h3 id="上下文环境（Context）"><a href="#上下文环境（Context）" class="headerlink" title="上下文环境（Context）"></a>上下文环境（Context）</h3><p>有了表达式和Root对象，我们已经可以使用OGNL的基本功能。例如，根据表达式针对OGNL中的Root对象进行“取值”或者“写值”操作。</p>
+<p>不过，事实上，在OGNL的内部，所有的操作都会在一个特定的数据环境中运行，这个数据环境就是OGNL的上下文环境（Context）。说得再明白一些，就是这个上下文环境（Context）将规定OGNL的操作在哪里干。</p>
+<p>OGNL的上下文环境是一个Map结构，称之为OgnlContext。之前我们所提到的Root对象（Root Object），事实上也会被添加到上下文环境中去，并且将被作为一个特殊的变量进行处理。</p>
+<h2 id="OGNL的基本操作"><a href="#OGNL的基本操作" class="headerlink" title="OGNL的基本操作"></a>OGNL的基本操作</h2><h3 id="对Root对象（Root-Object）的访问"><a href="#对Root对象（Root-Object）的访问" class="headerlink" title="对Root对象（Root Object）的访问"></a>对Root对象（Root Object）的访问</h3><p>针对OGNL的Root对象的对象树的访问是通过使用“点号”将对象的引用串联起来实现的。通过这种方式，OGNL实际上将一个树形的对象结构转化成了一个链式结构的字符串结构来表达语义。</p>
+<pre><code class="JAVA">// 获取Root对象中的name属性的值  
+name     
+// 获取Root对象中job属性中的title属性的实际值  
+job.title
+// 获取Root对象中jobDetailJson属性中baseInfo属性中video属性中src的实际值  
+jobDetailJson.baseInfo.video.src
+</code></pre>
+<h3 id="对上下文环境（Context）的访问"><a href="#对上下文环境（Context）的访问" class="headerlink" title="对上下文环境（Context）的访问"></a>对上下文环境（Context）的访问</h3><p>由于OGNL的上下文是一个Map结构，在OGNL进行计算时可以事先在上下文环境中设置一些参数，并让OGNL将这些参数带入进行计算。有时候也需要对这些上下文环境中的参数进行访问，访问这些参数时，需要通过#符号加上链式表达式来进行，从而表示与访问Root对象（Root Object）的区别。</p>
+<pre><code class="JAVA">// 获取OGNL上下文环境中名为introduction的对象的值  
+#introduction    
+// 获取OGNL上下文环境中名为data的对象中job对象中名为salaryRange的属性的值  
+#data.job.salaryRange
+</code></pre>
+<h3 id="对静态变量的访问"><a href="#对静态变量的访问" class="headerlink" title="对静态变量的访问"></a>对静态变量的访问</h3><p>在OGNL中，对于静态变量或者静态方法的访问，需要通过@[class]@[field &#x2F; method]的表达式语法来进行。</p>
+<pre><code class="JAVA">// 访问com.nature.myspringboot.ognl.OgnlLearn 类中名为VALUE的属性值  
+@com.nature.myspringboot.ognl.OgnlLearn@VALUE
+// 调用com.nature.myspringboot.ognl.OgnlLearn 类中名为getVal()的方法
+@com.nature.myspringboot.ognl.OgnlLearn@getVal()
+</code></pre>
+<h3 id="方法调用"><a href="#方法调用" class="headerlink" title="方法调用"></a>方法调用</h3><p>在OGNL中调用方法，可以直接通过类似Java的方法调用方式进行，也就是通过点号加方法名称完成方法调用，甚至可以传递参数。</p>
+<pre><code class="JAVA">// 调用上下文内容data对象中的jobApplyUserList的size()方法  
+#data.jobApplyUserList.size()
+// 调用上下文内容data对象中的jobDetailJson.baseInfo.video.src字段的方法，也可将上下文环境中名为#data.job.title的值作为参数传入  
+#data.jobDetailJson.baseInfo.video.src.endsWith(&quot;.png&quot;)
+#data.jobDetailJson.baseInfo.video.src.contains(#data.job.title)
+</code></pre>
+<h3 id="使用操作符进行简单计算"><a href="#使用操作符进行简单计算" class="headerlink" title="使用操作符进行简单计算"></a>使用操作符进行简单计算</h3><p>OGNL表达式中能使用的操作符基本与Java里的操作符一样，除了能使用 +、 -、 *、&#x2F;、++、 –、 &#x3D;&#x3D; 等操作符之外，还能使用 mod、 in、not in等。</p>
+<pre><code class="JAVA">2+4 // 加   
+&quot;hello &quot; + &quot;world&quot; // 字符串叠加
+5-3 // 减  
+9/2 // 除  
+9 mod 2 // 取模  
+foo++ // 递增  
+foo == bar // 等于判断  
+foo in list // 是否在容器中  
+</code></pre>
+<h3 id="对数组和容器的访问"><a href="#对数组和容器的访问" class="headerlink" title="对数组和容器的访问"></a>对数组和容器的访问</h3><p>OGNL表达式可以支持对数组按照数组下标的顺序进行访问。同样的方法可以用于有序的容器，如ArrayList，LinkedHashSet等。对于Map结构，OGNL支持根据键值进行访问。</p>
+<pre><code class="JAVA">// 访问上下文data对象中的jobApplyUserList中第一个对象的name属性值
+#data.jobApplyUserList[0].name
+// 访问上下文中名为sessionMap的Map对象中key为currentLogonUser的值  
+#sessionMap[&#39;currentLogonUser&#39;]
+</code></pre>
+<h3 id="投影与选择"><a href="#投影与选择" class="headerlink" title="投影与选择"></a>投影与选择</h3><p>OGNL支持类似于数据库中的投影（projection） 和选择（selection）。</p>
+<p>投影是指选出集合中每个元素的相同属性组成新的集合，类似于关系数据库的字段操作。投影操作语法为collection.{XXX}，其中XXX 是这个集合中每个元素的公共属性。</p>
+<p>选择就是过滤满足selection条件的集合元素，类似于关系数据库的结果集操作。选择操作的语法为：collection.{X YYY}，其中X 是一个选择操作符，后面则是选择用的逻辑表达式，而选择操作符有三种：</p>
+<ul>
+<li>? 选择满足条件的所有元素</li>
+<li>^ 选择满足条件的第一个元素</li>
+<li>$ 选择满足条件的最后一个元素</li>
+</ul>
+<pre><code class="JAVA">// 返回上下文data对象中的jobApplyUserList这个集合中所有元素的name构成的集合  
+#data.jobApplyUserList.&#123;name&#125;   // 新的以name为元素的集合  
+// 将上下文data对象中jobApplyUserList这个集合中的元素的name和headImg用-连接符拼起来构成的字符串集合  
+#data.jobApplyUserList.&#123;name + ‘-’ + headImg&#125;   // name–headImg 为元素的集合  
+// 返回上下文data对象中jobApplyUserList这个集合所有元素中name不为null的元素构成的集合  
+#data.jobApplyUserList.&#123;? #this.name != null&#125;  // 过滤后的users集合  
+</code></pre>
+<h3 id="构造对象"><a href="#构造对象" class="headerlink" title="构造对象"></a>构造对象</h3><p>OGNL支持直接通过表达式来构造对象。构造的方式主要包括3种：</p>
+<ol>
+<li>构造List —— 使用{}，中间使用逗号隔开元素的方式表达列表</li>
+<li>构造Map —— 使用#{}，中间使用逗号隔开键值对，并使用冒号隔开key和value来构造Map</li>
+<li>构造对象 —— 直接使用已知对象的构造函数来构造对象</li>
+</ol>
+<pre><code class="JAVA">// 构造一个List  
+&#123;&quot;green&quot;, &quot;red&quot;, &quot;blue&quot;&#125;  
+// 构造一个Map  
+#&#123;&quot;key1&quot; : &quot;value1&quot;, &quot;key2&quot; : &quot;value2&quot;, &quot;key3&quot; : &quot;value3&quot;&#125;  
+// 构造一个java.net.URL对象  
+new java.net.URL(&quot;http://localhost/&quot;)
+</code></pre>
+<p>构造对象对于一个表达式语言来说是一个非常强大的功能，OGNL不仅能够直接对容器对象构造提供语法层面的支持，还能够对任意的Java对象提供支持。这样一来就使得OGNL不仅仅具备了数据运算这一简单的功能，同时还被赋予了潜在的逻辑计算功能。</p>
+<p>【OGNL带来的潜在问题】</p>
+<p><em><strong>我们已经能够看到OGNL在语法层面所表现出来的强大之处。然而，越强大的东西，其自身也一定存在着致命的弱点，这也就是所谓的“物极必反”。正是由于OGNL能够支持完整的Java对象创建、读写过程，它就能被作为一个潜在的切入点，成为黑客的攻击目标。</strong></em></p>
+
+        </div>
+        <div class="content-toc">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%BA%E5%A4%A7%E7%9A%84OGNL"><span class="toc-text">强大的OGNL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E5%85%A5OGNL%E7%9A%84API"><span class="toc-text">深入OGNL的API</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OGNL%E4%B8%89%E8%A6%81%E7%B4%A0"><span class="toc-text">OGNL三要素</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A8%E8%BE%BE%E5%BC%8F%EF%BC%88Expression%EF%BC%89"><span class="toc-text">表达式（Expression）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Root%E5%AF%B9%E8%B1%A1%EF%BC%88Root-Object%EF%BC%89"><span class="toc-text">Root对象（Root Object）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E7%8E%AF%E5%A2%83%EF%BC%88Context%EF%BC%89"><span class="toc-text">上下文环境（Context）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OGNL%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="toc-text">OGNL的基本操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9Root%E5%AF%B9%E8%B1%A1%EF%BC%88Root-Object%EF%BC%89%E7%9A%84%E8%AE%BF%E9%97%AE"><span class="toc-text">对Root对象（Root Object）的访问</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E4%B8%8A%E4%B8%8B%E6%96%87%E7%8E%AF%E5%A2%83%EF%BC%88Context%EF%BC%89%E7%9A%84%E8%AE%BF%E9%97%AE"><span class="toc-text">对上下文环境（Context）的访问</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E9%9D%99%E6%80%81%E5%8F%98%E9%87%8F%E7%9A%84%E8%AE%BF%E9%97%AE"><span class="toc-text">对静态变量的访问</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8"><span class="toc-text">方法调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%93%8D%E4%BD%9C%E7%AC%A6%E8%BF%9B%E8%A1%8C%E7%AE%80%E5%8D%95%E8%AE%A1%E7%AE%97"><span class="toc-text">使用操作符进行简单计算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E6%95%B0%E7%BB%84%E5%92%8C%E5%AE%B9%E5%99%A8%E7%9A%84%E8%AE%BF%E9%97%AE"><span class="toc-text">对数组和容器的访问</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8A%95%E5%BD%B1%E4%B8%8E%E9%80%89%E6%8B%A9"><span class="toc-text">投影与选择</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E5%AF%B9%E8%B1%A1"><span class="toc-text">构造对象</span></a></li></ol></li></ol>
+        </div>
+    </div>
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                         
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 20xx - 2022 NatureRan
+            <span class="footer-icon">
+                <i class="fa-solid fa-font-awesome fa-fw"></i>
+            </span>
+            @Nature
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/argvchs/hexo-theme-particlex">ParticleX Theme</a></div>
+        
+        <div>
+            备案号：<a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">
+                浙ICP备2022026588号-1
+            </a>
+        </div>
+        
+    </div>
+</footer>
+                    </div>
+                </div>
+            </transition>
+            <div id="img_show">
+                <img id="img_content" alt="img_show">
+            </div>
+        </div>
+        <script src="https://cdn.staticfile.org/highlight.js/11.5.1/highlight.min.js"></script>
+        <script src="/js/particlex.js"></script>
+        <script src="/js/showimg.js"></script>
+        
+<script src="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.js"></script>
+<script>
+    var clientID = "240487ff75e73edeb415", clientSecret = "e4e29f4f7a4a8269fbd36fb31884017b1acda8cd";
+    
+    const gitalk = new Gitalk({
+        clientID: clientID,
+        clientSecret: clientSecret,
+        repo: "natureran.github.io",
+        owner: "NatureRan",
+        admin: ["NatureRan"],
+        language: "zh-CN",
+        id: location.pathname,
+        distractionFreeMode: false,
+        
+    })
+    gitalk.render("gitalk-container")
+</script>
+
+
+    </body>
+
+    <canvas
+        id="fireworks"
+        style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483647"
+    ></canvas>
+    <script type="text/javascript" src="/js/anime.js"></script>
+    <script src="/js/fireworks.js"></script>
+
+    <canvas
+        id="background"
+        style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:-1"
+    ></canvas>
+    <script src="/js/background.js"></script>
+
+    <div id="cursor"></div>
+    <script src="/css/cursor.css"></script>
+    <script src="/js/cursor.js"></script>
+</html>
