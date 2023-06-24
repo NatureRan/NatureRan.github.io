@@ -1,0 +1,409 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+        <title>本地缓存常见过期算法 | NatureRan</title>
+        <meta name="author" content="Nature">
+        <meta name="description" content="">
+        <meta name="keywords" content="java">
+        <link rel="icon" href="https://image.tianran.online/benghuai11-headImg.jpg">
+        <script src="https://cdn.staticfile.org/instant.page/5.1.0/instantpage.min.js" type="module"></script>
+        <script src="https://cdn.staticfile.org/font-awesome/6.1.1/js/all.min.js"></script>
+        
+        <link rel="stylesheet" href="/css/fonts.min.css">
+        <link rel="stylesheet" href="/css/particlex.css">
+        
+        <script src="https://cdn.staticfile.org/vue/3.2.33/vue.global.prod.min.js"></script>
+    <meta name="generator" content="Hexo 6.2.0"></head>
+    <body>
+        <div id="loading" style="height:100vh;width:100vw;position:fixed;display:flex;z-index:200;justify-content:space-between;background:#fff;transition:opacity 0.3s ease-out"><div style="position:fixed;height:100vh;width:100vw;display:flex;justify-content:center;align-items:center"><div id="loadcontent" style="width:50vmin;height:50vmin;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px #a3ddfb;text-align:center"><div><h2>LOADING...</h2><p style="word-break:keep-all">加载过慢请开启缓存(浏览器默认开启)</p><div><img alt="loading" src="/loading.gif"></div></div></div></div></div>
+        <div id="layout">
+            <i data-fa-symbol="calendar-solid" class="fa-solid fa-calendar fa-fw"></i>
+            <i data-fa-symbol="bookmark-solid" class="fa-solid fa-bookmark fa-fw"></i>
+            <i data-fa-symbol="tags-solid" class="fa-solid fa-tags fa-fw"></i>
+            <transition name="into">
+                <div v-show="show_page" style="display: -not-none">
+                    <div id="menu_show">
+                         
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">NatureRan</span>
+        </a>
+        
+        <a href="/">
+            <i class="fa-solid fa-house fa-fw"></i>
+            <span>&ensp;home</span>
+        </a>
+        
+        <a href="/about">
+            <i class="fa-solid fa-id-card fa-fw"></i>
+            <span>&ensp;about</span>
+        </a>
+        
+        <a href="/archives">
+            <i class="fa-solid fa-box-archive fa-fw"></i>
+            <span>&ensp;archives</span>
+        </a>
+        
+        <a href="/categories">
+            <i class="fa-solid fa-bookmark fa-fw"></i>
+            <span>&ensp;categories</span>
+        </a>
+        
+        <a href="/tags">
+            <i class="fa-solid fa-tags fa-fw"></i>
+            <span>&ensp;tags</span>
+        </a>
+        
+    </div>
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div class="curtain" @click="menu_show = !menu_show" v-show="menu_show"></div>
+        <div :class="'title'" @click="menu_show = !menu_show">
+            <i class="fa-solid fa-bars fa-fw"></i>
+            <span>&emsp;NatureRan</span>
+        </div>
+        <transition name="slide">
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-house fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">home</div>
+                </div>
+            </a>
+            
+            <a href="/about">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-id-card fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">about</div>
+                </div>
+            </a>
+            
+            <a href="/archives">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-box-archive fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">archives</div>
+                </div>
+            </a>
+            
+            <a href="/categories">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-bookmark fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">categories</div>
+                </div>
+            </a>
+            
+            <a href="/tags">
+                <div class="item">
+                    <div style="min-width: 20px; max-width: 50px; width: 10%">
+                        <i class="fa-solid fa-tags fa-fw"></i>
+                    </div>
+                    <div style="min-width: 100px; max-width: 150%; width: 20%">tags</div>
+                </div>
+            </a>
+            
+        </div>
+        </transition>
+    </div>
+</nav>
+                    </div>
+                    <div id="main">
+                        
+<div class="article">
+    <div>
+        <h1>本地缓存常见过期算法 </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <svg class="fa-icon"><use xlink:href="#calendar-solid"></use></svg>
+            </span>
+            2023/5/29
+        </span>
+        
+        <span class="category">
+            <a href="/categories/算法/">
+                <span class="icon">
+                    <svg class="fa-icon"><use xlink:href="#bookmark-solid"></use></svg>
+                </span>
+                算法
+            </a>
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <svg class="fa-icon"><use xlink:href="#tags-solid"></use></svg>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/Java/" style="color: #03a9f4">
+                    Java
+                </a>
+            </span>
+            
+        </span>
+        
+    </div>
+    <div class="content" v-pre>
+        <div class="content-content">
+            <ol>
+<li>LRU（Least Recently Used）最近最久未使用</li>
+<li>LFU（Least Frequently Used）最近最少频率使用</li>
+<li>W-TinyLFU CaffineCache所使用的缓存过期算法</li>
+</ol>
+<span id="more"></span>
+
+<h1 id="LRU"><a href="#LRU" class="headerlink" title="LRU"></a>LRU</h1><p>Least Recently Used 最近最久未使用</p>
+<p>它是优先淘汰掉最久未访问到的数据。缺点是不能很好地应对偶然的突发流量。</p>
+<h2 id="LRU的简单实现"><a href="#LRU的简单实现" class="headerlink" title="LRU的简单实现"></a>LRU的简单实现</h2><p>HashMap+链表</p>
+<p>HashMap负责存储元素，同时每个元素的key之间彼此又构成一个双向链表，每次新增或访问元素时，将该元素放到链表的表头，则队尾元素就是最近最久未使用的元素</p>
+<h2 id="算法过程"><a href="#算法过程" class="headerlink" title="算法过程"></a>算法过程</h2><ul>
+<li>读缓存<ol>
+<li>key存在：<ul>
+<li>在原链表中删除缓存key，重新插入到链表头部</li>
+<li>从HashMap中读取对应的value并返回</li>
+</ul>
+</li>
+<li>key不存在：<ul>
+<li>返回null</li>
+</ul>
+</li>
+</ol>
+</li>
+<li>写缓存（更新缓存）<ol>
+<li>容量未达上限：<ul>
+<li>将key插到链表头部</li>
+<li>将key-value放入HashMap</li>
+</ul>
+</li>
+<li>容量已达上限：<ol>
+<li>当前key已存在<ul>
+<li>从链表中将key移动到表头</li>
+<li>更新HashMap中的value</li>
+</ul>
+</li>
+<li>key不存在<ul>
+<li>获取并删除链表尾部节点key</li>
+<li>从HashMap中删除key</li>
+<li>执行写缓存的第一种情况（容量未达上限）</li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ul>
+<pre><code class="JAVA">public class MyLRUCache&lt;K, V&gt; &#123;
+
+    private int limit = 0;
+
+    private Map&lt;K, V&gt; map;
+
+    private LinkedList&lt;K&gt; list;
+
+    public MyLRUCache(int limit) &#123;
+        map = new HashMap&lt;&gt;();
+        list = new LinkedList&lt;&gt;();
+        this.limit = limit;
+    &#125;
+
+    public void put(K key, V value) &#123;
+        if (!map.containsKey(key) &amp;&amp; list.size() &gt;= limit) &#123;
+            // 驱逐最近未使用的元素
+            K last = list.pollLast();
+            map.remove(last);
+        &#125;
+        map.put(key, value);
+        list.remove(key);
+        list.addFirst(key);
+    &#125;
+
+    public V get(K key) &#123;
+        if (!map.containsKey(key)) &#123;
+            return null;
+        &#125;
+        list.remove(key);
+        list.addFirst(key);
+        return map.get(key);
+    &#125;
+
+    @Override
+    public String toString() &#123;
+        return &quot;MyLRUCache&#123;&quot; +
+                &quot;limit=&quot; + limit +
+                &quot;, map=&quot; + map +
+                &quot;, list=&quot; + list +
+                &#39;&#125;&#39;;
+    &#125;
+&#125;
+</code></pre>
+<h2 id="LRU的时间复杂度分析"><a href="#LRU的时间复杂度分析" class="headerlink" title="LRU的时间复杂度分析"></a>LRU的时间复杂度分析</h2><p>读取和写入的时间复杂度均为O(1)</p>
+<h2 id="GuavaCache中实现LRU的方式"><a href="#GuavaCache中实现LRU的方式" class="headerlink" title="GuavaCache中实现LRU的方式"></a>GuavaCache中实现LRU的方式</h2><p>类似ConcurrentHashMap+两个链表，也叫SLRU</p>
+<p>之所以需要两个链表是因为GuavaCache同时具有expireAfterAccess和expireAfterWrite两种缓存过期策略，所以同时维护了accessQueue和writeQueue<br><img src="/../images/W-TinyLFU%E7%BC%93%E5%AD%98%E6%A8%A1%E5%9E%8B/guava_cache.webp" alt="guava cache"></p>
+<h1 id="LFU"><a href="#LFU" class="headerlink" title="LFU"></a>LFU</h1><p>Least Frequently Used 最近最少频率使用</p>
+<p>它能优先淘汰掉访问次数最少的数据（对于访问次数相同的元素，优先淘汰最久未使用的）。缺点是消耗CPU资源较高。</p>
+<h2 id="LFU的简单实现"><a href="#LFU的简单实现" class="headerlink" title="LFU的简单实现"></a>LFU的简单实现</h2><p>实现这个算法依然可以使用HashMap+链表的结构，由于需要记录每个元素被访问的次数，链表中需要储存一个对象，对象中包含key和frequency。</p>
+<h2 id="算法过程-1"><a href="#算法过程-1" class="headerlink" title="算法过程"></a>算法过程</h2><ul>
+<li>读缓存<ol>
+<li>key存在：（当前key的frequency为freCnt）<ul>
+<li>将节点移动到所有frequency&lt;&#x3D;freCnt+1的节点前面</li>
+<li>更新当前key的frequency&#x3D;freCnt+1</li>
+<li>从HashMap中读取对应的value并返回</li>
+</ul>
+</li>
+<li>key不存在：<ul>
+<li>返回null</li>
+</ul>
+</li>
+</ol>
+</li>
+<li>写缓存<ol>
+<li>key存在<ul>
+<li>更新HashMap中的value</li>
+</ul>
+</li>
+<li>key不存在<ol>
+<li>缓存容量未达上限<ul>
+<li>构造链表节点key&#x3D;key，frequency&#x3D;1，并将他放到链表中所有frequency&#x3D;1的节点前面</li>
+<li>将key-value放入HashMap</li>
+</ul>
+</li>
+<li>缓存容量已达上限<ul>
+<li>获取并删除链表尾部节点</li>
+<li>根据尾部节点key，将其从HashMap中移除</li>
+<li>执行写缓存key不存在的第一种情况（容量未达上限）</li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ul>
+<h2 id="LFU的时间复杂度分析"><a href="#LFU的时间复杂度分析" class="headerlink" title="LFU的时间复杂度分析"></a>LFU的时间复杂度分析</h2><p>读取和写入的时间复杂度都是O(n)，每次读取和写入都需要遍历链表寻找节点应该被插入的位置</p>
+<h1 id="Count-Min-Sketch（最小近似计数）"><a href="#Count-Min-Sketch（最小近似计数）" class="headerlink" title="Count-Min Sketch（最小近似计数）"></a>Count-Min Sketch（最小近似计数）</h1><p>LFU显著的缺点就是在于对每个元素的计数操作，如果单独使用一个HashMap来实现计数，那由于元素个数可能非常大，那么用于计数所耗费的空间也会非常大，当HashMap的冲突变高时，查询或更新计数的操作也会变得无法满足要求。</p>
+<p>那么，Count-Min Sketch就是用来专门解决此类计数问题的。</p>
+<p>这个算法的技巧是：不存储所有不同元素的计数，只存储它们的近似（sketch）计数。</p>
+<p>基本思路如下：</p>
+<ol>
+<li>创建一个长度为x的数组，用来计数，初始化每个元素的计数值为0；</li>
+<li>对于一个新来的元素，使用hash算法获得一个0到x的hash值i，则数组的下标i数值+1；</li>
+<li>查询一个元素的计数值时，只要得到这个元素的hash值i，则数组的下标i存储的数值就是这个元素的计数值；</li>
+</ol>
+<p>问题：多个元素的hash值相同时会导致他们的计数值统计偏大</p>
+<p>优化方案：</p>
+<ol>
+<li>使用多个数组和多种不同的hash算法，来分别对每个元素进行计数；</li>
+<li>只对计数值最小的值进行+1操作；</li>
+<li>查询计数值时用最小值作为近似计数值。</li>
+</ol>
+<p><img src="/../images/W-TinyLFU%E7%BC%93%E5%AD%98%E6%A8%A1%E5%9E%8B/count_min_sketch_01.jpeg"><br><img src="/../images/W-TinyLFU%E7%BC%93%E5%AD%98%E6%A8%A1%E5%9E%8B/count_min_sketch_02.jpeg"></p>
+<p>算法特点</p>
+<ul>
+<li>估值只会偏大，不会偏小</li>
+<li>所使用的存储空间和计算时间固定，和需要统计的元素个数无关</li>
+<li>对于低频的元素，估值出错的可能性更大</li>
+</ul>
+<h1 id="TinyLFU"><a href="#TinyLFU" class="headerlink" title="TinyLFU"></a>TinyLFU</h1><p>缓存清除策略选择一个缓存驱逐对象，而TinyLFU决定是否用新项替换缓存驱逐对象以增加命中率。<br>TinyLFU维护了一个相当大的近期历史上项目频率的统计数据，它使用Count-Min Sketch来统计频率，并且引入reset机制来保证元素的新鲜（每过一段时间对所有计数值除以2）。<br><img src="/../images/W-TinyLFU%E7%BC%93%E5%AD%98%E6%A8%A1%E5%9E%8B/TinyLFU.jpg"></p>
+<p>缺点：遇到稀疏爆发的对象被访问时，由于短时间里累计的频率无法达到一个比较高的值，很容易被持续淘汰。</p>
+<h1 id="W-TinyLFU"><a href="#W-TinyLFU" class="headerlink" title="W-TinyLFU"></a>W-TinyLFU</h1><p>W-TinyLFU通过增加了一个窗口缓存区（window cache）来解决TinyLFU的问题。</p>
+<p>每个元素首先会进入window cache，这个空间采取LRU的淘汰机制，每当这个空间中元素被淘汰时，需要进入TinyLFU的频率PK，获胜则可以进入主缓存区，否则只被直接淘汰。通过这样的方式可以延长一些短时间内被多次访问的对象的存活时间，从而让它在LRU这个淘汰机制下被淘汰时有足够多的访问频率去进入到主缓存中。</p>
+<p>Caffine Cache采用的缓存模型便是W-TinyLFU，而且Caffine Cache是通过另外一种算法来动态调节窗口缓存区和主缓存区的比例，让最终的缓存命中率可以更高。<br><img src="/../images/W-TinyLFU%E7%BC%93%E5%AD%98%E6%A8%A1%E5%9E%8B/W-TinyLFU.jpg"></p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/555732758?utm_id=0">Guava Cache缓存设计原理</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43240734/article/details/123159387">LRU和LFU 算法</a><br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MjM5ODIzNDQ3Mw==&mid=2649967190&idx=1&sn=67406c916f75c3f2ee59ce05d3f65ea8&chksm=beca3a5089bdb34652a7dbf7b399379f8ccfa3f941c1752dec529b1532018189cb0e4edb12b8&mpshare=1&scene=1&srcid=0622k0SqC0P2ryonJeaM5bVR&pass_ticket=4R9ZWXz/DcFGK9tVfysrmusZ3J09OLC1S3R3B+hZmqJ6QAiynVx5CyF+y1Z2dT4Y#rd">Count-Min Sketch算法</a></p>
+
+        </div>
+        <div class="content-toc">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#LRU"><span class="toc-text">LRU</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#LRU%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="toc-text">LRU的简单实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%97%E6%B3%95%E8%BF%87%E7%A8%8B"><span class="toc-text">算法过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LRU%E7%9A%84%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90"><span class="toc-text">LRU的时间复杂度分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GuavaCache%E4%B8%AD%E5%AE%9E%E7%8E%B0LRU%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="toc-text">GuavaCache中实现LRU的方式</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#LFU"><span class="toc-text">LFU</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#LFU%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="toc-text">LFU的简单实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%97%E6%B3%95%E8%BF%87%E7%A8%8B-1"><span class="toc-text">算法过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LFU%E7%9A%84%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90"><span class="toc-text">LFU的时间复杂度分析</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Count-Min-Sketch%EF%BC%88%E6%9C%80%E5%B0%8F%E8%BF%91%E4%BC%BC%E8%AE%A1%E6%95%B0%EF%BC%89"><span class="toc-text">Count-Min Sketch（最小近似计数）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#TinyLFU"><span class="toc-text">TinyLFU</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#W-TinyLFU"><span class="toc-text">W-TinyLFU</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-text">参考资料</span></a></li></ol>
+        </div>
+    </div>
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                         
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 20xx - 2023 NatureRan
+            <span class="footer-icon">
+                <i class="fa-solid fa-font-awesome fa-fw"></i>
+            </span>
+            @Nature
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/argvchs/hexo-theme-particlex">ParticleX Theme</a></div>
+        
+        <div>
+            备案号：<a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/">
+                浙ICP备2022026588号-1
+            </a>
+        </div>
+        
+    </div>
+</footer>
+                    </div>
+                </div>
+            </transition>
+            <div id="img_show">
+                <img id="img_content" alt="img_show">
+            </div>
+        </div>
+        <script src="https://cdn.staticfile.org/highlight.js/11.5.1/highlight.min.js"></script>
+        <script src="/js/particlex.js"></script>
+        <script src="/js/showimg.js"></script>
+        
+<script src="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.js"></script>
+<script>
+    var clientID = "240487ff75e73edeb415", clientSecret = "e4e29f4f7a4a8269fbd36fb31884017b1acda8cd";
+    
+    const gitalk = new Gitalk({
+        clientID: clientID,
+        clientSecret: clientSecret,
+        repo: "natureran.github.io",
+        owner: "NatureRan",
+        admin: ["NatureRan"],
+        language: "zh-CN",
+        id: location.pathname,
+        distractionFreeMode: false,
+        
+    })
+    gitalk.render("gitalk-container")
+</script>
+
+
+    </body>
+
+    <canvas
+        id="fireworks"
+        style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483647"
+    ></canvas>
+    <script type="text/javascript" src="/js/anime.js"></script>
+    <script src="/js/fireworks.js"></script>
+
+    <canvas
+        id="background"
+        style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:-1"
+    ></canvas>
+    <script src="/js/background.js"></script>
+
+    <div id="cursor"></div>
+    <script src="/css/cursor.css"></script>
+    <script src="/js/cursor.js"></script>
+</html>

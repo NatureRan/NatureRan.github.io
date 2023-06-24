@@ -183,7 +183,7 @@ char* const container_args[] = &#123;
 &#125;;
 
 int container_main(void* arg)
-&#123;  
+&#123;
   printf(&quot;Container - inside the container!\n&quot;);
   execv(container_args[0], container_args);
   printf(&quot;Something&#39;s wrong!\n&quot;);
