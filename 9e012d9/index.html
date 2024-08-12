@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
-        <title>Categories: 文档 | NatureRan</title>
+        <title>状态模式-SpringStateMachine | NatureRan</title>
         <meta name="author" content="Nature">
         <meta name="description" content="">
         <meta name="keywords" content="java">
@@ -119,44 +119,21 @@
 </nav>
                     </div>
                     <div id="main">
-                         
-<div class="categories-tags">
-    
-    <div class="all-s">
-        
-        
-        <span>
-            <a href="/categories/文档/" style="background: linear-gradient(120deg, #9abbf7 0%, #ffbbf4 100%)">
-                <span class="icon">
-                    <svg class="fa-icon"><use xlink:href="#bookmark-solid"></use></svg>
-                </span>
-                文档
-            </a>
+                        
+<div class="article">
+    <div>
+        <h1>状态模式-SpringStateMachine </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <svg class="fa-icon"><use xlink:href="#calendar-solid"></use></svg>
+            </span>
+            2023/8/16
         </span>
         
-        
-        <span>
-            <a href="/categories/工作记录/" style="background: #ffa2c4">
-                <span class="icon">
-                    <svg class="fa-icon"><use xlink:href="#bookmark-solid"></use></svg>
-                </span>
-                工作记录
-            </a>
-        </span>
-        
-        
-        <span>
-            <a href="/categories/算法/" style="background: #00a596">
-                <span class="icon">
-                    <svg class="fa-icon"><use xlink:href="#bookmark-solid"></use></svg>
-                </span>
-                算法
-            </a>
-        </span>
-        
-        
-        <span>
-            <a href="/categories/设计模式/" style="background: #00a596">
+        <span class="category">
+            <a href="/categories/设计模式/">
                 <span class="icon">
                     <svg class="fa-icon"><use xlink:href="#bookmark-solid"></use></svg>
                 </span>
@@ -164,47 +141,48 @@
             </a>
         </span>
         
-    </div>
-    <div id="archives">
         
-        <div class="timeline">
-            <div class="timeline-tail"></div>
-            <div class="timeline-content">
-                <div class="item-time">2022/9/2</div>
-                <a href="/48bf034f/">
-                    <h3>Guava Caches文档</h3>
+        <span class="tags">
+            <span class="icon">
+                <svg class="fa-icon"><use xlink:href="#tags-solid"></use></svg>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/java/" style="color: #00a596">
+                    java
                 </a>
-                <div class="info">
-                    
-                    <span class="category">
-                        <a href="/categories/文档/">
-                            <span class="icon">
-                                <svg class="fa-icon"><use xlink:href="#bookmark-solid"></use></svg>
-                            </span>
-                            文档
-                        </a>
-                    </span>
-                    
-                    
-                    <span class="tags">
-                        <span class="icon">
-                            <svg class="fa-icon"><use xlink:href="#tags-solid"></use></svg>
-                        </span>
-                        
-                        <span class="tag">
-                            
-                            <a href="/tags/Java/" style="color: #03a9f4">
-                                Java
-                            </a>
-                        </span>
-                        
-                    </span>
-                    
-                </div>
-            </div>
-        </div>
+            </span>
+            
+        </span>
         
     </div>
+    <div class="content" v-pre>
+        <div class="content-content">
+            <h1 id="状态模式简介"><a href="#状态模式简介" class="headerlink" title="状态模式简介"></a>状态模式简介</h1><p><strong>状态模式</strong>是一种行为设计模式， 让你能在一个对象的内部状态变化时改变其行为， 使其看上去就像改变了自身所属的类一样。</p>
+<p>状态模式与<strong>有限状态机</strong>的概念紧密相关<br><img src="/../images/%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F-SpringStateMachine/%E7%AE%80%E5%8D%95%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA.png" alt="有限状态机"></p>
+<span id="more"></span>
+
+<p>其主要思想是程序在任意时刻仅可处于几种<strong>有限的状态</strong>中。 在任何一个特定状态中， 程序的行为都不相同， 且可瞬间从一个状态切换到另一个状态。 不过， 根据当前状态， 程序可能会切换到另外一种状态， 也可能会保持当前状态不变。 这些数量有限且预先定义的状态切换规则被称为<strong>转移</strong>。</p>
+<p>你还可将该方法应用在对象上。 假如你有一个 文档Document类。 文档可能会处于 <em>草稿Draft</em>、<em>审阅中Moderation</em>和 <em>已发布Published</em>三种状态中的一种。 文档的 publish发布方法在不同状态下的行为略有不同：</p>
+<ul>
+<li>处于<em>草稿</em>状态时， 它会将文档转移到审阅中状态。</li>
+<li>处于<em>审阅中</em>状态时， 如果当前用户是管理员， 它会公开发布文档。</li>
+<li>处于<em>已发布</em>状态时， 它不会进行任何操作。<br><img src="/../images/%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F-SpringStateMachine/%E6%96%87%E6%A1%A3%E7%8A%B6%E6%80%81%E5%9B%BE.png" alt="文档对象的全部状态和转移"></li>
+</ul>
+
+        </div>
+        <div class="content-toc">
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F%E7%AE%80%E4%BB%8B"><span class="toc-text">状态模式简介</span></a></li></ol>
+        </div>
+    </div>
+    
+    <link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
 </div>
                          
 <footer id="footer">
@@ -239,6 +217,24 @@
         <script src="/js/particlex.js"></script>
         <script src="/js/showimg.js"></script>
         
+<script src="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.js"></script>
+<script>
+    var clientID = "240487ff75e73edeb415", clientSecret = "e4e29f4f7a4a8269fbd36fb31884017b1acda8cd";
+    
+    const gitalk = new Gitalk({
+        clientID: clientID,
+        clientSecret: clientSecret,
+        repo: "natureran.github.io",
+        owner: "NatureRan",
+        admin: ["NatureRan"],
+        language: "zh-CN",
+        id: location.pathname,
+        distractionFreeMode: false,
+        
+    })
+    gitalk.render("gitalk-container")
+</script>
+
 
     </body>
 
